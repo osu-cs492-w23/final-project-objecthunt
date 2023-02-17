@@ -3,11 +3,61 @@
 <head>
   <title>Express</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="javascripts/index.js"></script>
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+<div id="createRoomDiv">
+  <h1>ObjectHunt</h1>
+  <p>Welcome to ObjectHunt</p>
+
+  <label>
+    Enter your nickname
+    <input type="text" id="nicknameInput"/>
+  </label>
+  <br><br>
+  <label>
+    Enter room ID
+    <input type="text" id="roomIDInput"/>
+  </label>
+  <br>
+  <button id="joinRoomBtn" onclick="socketJoinRoom()">Join room</button>
+  <br><br>
+  <label>
+    Enter the time limit<br>
+    <input type="number" id="timeLimitMinutesInput"/>
+    minutes
+    <input type="number" id="timeLimitSecondsInput"/>
+    seconds
+  </label>
+  <br><br>
+  <label>
+    Enter items you want to include<br>
+    <input type="text" id="itemListInput"/>
+  </label>
+  <button id="addItemBtn" onclick="addSearchItem()">Add item</button>
+  <br><br>
+  <label>
+    Enter index of item you want to remove<br>
+    <input type="number" id="itemListRemoveInput"/>
+  </label>
+  <button id="removeItemBtn" onclick="removeSearchItem()">Remove item</button>
+
+  <div id="searchItemList" style="overflow: auto; height: 300px; margin-bottom: 10px"></div>
+  <button id="createRoomBtn" onclick="socketCreateRoom()">Create room</button>
+</div>
+
+  <div id="chatRoomDiv">
+    <p id="roomCode"></p>
+    <div id="chatWindow">
+
+    </div>
+    <label for="chatBoxInput">Enter your message</label>
+    <input type="text" id="chatBoxInput"/>
+    <button id="submitChat">Submit</button>
+  </div>
+
 </body>
 
 </html>
