@@ -49,13 +49,16 @@
 </div>
 
   <div id="chatRoomDiv">
+    <p id="roomUserNickname"></p>
+    <p id="roomObjectList"></p>
+    <p id="roomTimeLimit"></p>
     <p id="roomCode"></p>
-    <div id="chatWindow">
+    <div id="chatWindow" style="background: lightgrey; height: 80%; overflow: auto">
 
     </div>
     <label for="chatBoxInput">Enter your message</label>
     <input type="text" id="chatBoxInput"/>
-    <button id="submitChat">Submit</button>
+    <button id="submitChat" onclick="socketSendChat()">Submit</button>
   </div>
 
 </body>

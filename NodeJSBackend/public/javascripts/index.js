@@ -17,6 +17,10 @@ let createRoomDiv
 let chatRoomDiv
 let roomCode
 let chatWindow
+let chatBoxInput
+let roomUserNickname
+let roomObjectList
+let roomTimeLimit
 
 window.onload = () => {
     createRoomBtn = document.getElementById("createRoomBtn")
@@ -36,6 +40,14 @@ window.onload = () => {
     chatRoomDiv.style.display = "none"
     roomCode = document.getElementById("roomCode")
     chatWindow = document.getElementById("chatWindow")
+    chatBoxInput = document.getElementById("chatBoxInput")
+}
+
+function prepChatPage(roomID){
+    createRoomDiv.style.display = "none"
+    chatRoomDiv.style.display = "block"
+    roomCode.textContent = "Room code: " + roomID
+    socketUpdateChat()
 }
 
 function socketCreateRoom(){
@@ -57,7 +69,10 @@ function socketCreateRoom(){
 }
 
 function socketJoinRoom(){
-    socket.emit("joinRoom", roomIDInput.value, (response) => {
+    socket.emit("joinRoom", {
+        "roomID": roomIDInput.value,
+        "nickname": nicknameInput.value
+    }, (response) => {
         console.log("joinRoom Ack: ", response)
         roomID = response["roomID"]
         if(response["status"] === "ok"){
@@ -94,9 +109,28 @@ function socketUpdateChat(){
         console.log("socketUpdateChat Ack: ", response)
         if(response["status"] === "ok"){
             chatWindow.innerHTML = response["chatHistory"].map((item)=>{
-                let senderNickname = item["sender"] === "System" ? "System" : currentRoom["players"][item["sender"]]
-                return "<p>" + item["timeStamp"] + " " + senderNickname + ": " + item["body"] + "</p>"
+                let senderNickname = item["sender"] === "System" ? "System" : currentRoom["players"][item["sender"]]["nickname"]
+                let time = new Date(item["timeStamp"])
+                return "<p>" + time.toLocaleTimeString() + " " + senderNickname + ": " + item["body"] + "</p>"
             }).join("")
         }
     })
 }
+
+function socketSendChat(){
+    socket.emit("sendChat", chatBoxInput.value, roomID, (response)=>{
+        console.log("socketSendChat Ack: ", response)
+        chatBoxInput.value = ""
+    })
+}
+
+socket.on("roomFilled", (room)=>{
+    currentRoom = room
+    socketUpdateChat()
+})
+
+socket.on("chatUpdated", (newMessage)=>{
+    let senderNickname = newMessage["sender"] === "System" ? "System" : currentRoom["players"][newMessage["sender"]]["nickname"]
+    let time = new Date(newMessage["timeStamp"])
+    chatWindow.innerHTML = chatWindow.innerHTML + "<p>" + time.toLocaleTimeString() + " " + senderNickname + ": " + newMessage["body"] + "</p>"
+})

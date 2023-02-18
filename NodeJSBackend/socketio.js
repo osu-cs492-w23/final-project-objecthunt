@@ -10,6 +10,13 @@ function init(server) {
     io.on('connection', (socket) => {
         console.log("connection initialized by id: ", socket.id)
 
+        socket.on("echoTest", (message, callback) => {
+            console.log(message)
+            callback({
+                "message": message
+            })
+        })
+
         socket.on("createRoom", (params, callback)=>{
             callback = checkCallback(callback, socket.id,  "createRoom")
             console.log(socket.id + " created room")
@@ -47,7 +54,7 @@ function init(server) {
                 })
                 return
             }
-            socket.data.params.roomID = params.roomID
+            socket.data.roomID = params.roomID
             socket.join(params.roomID)
             rooms[params.roomID]["players"][socket.id] = {"nickname": params.nickname}
             rooms[params.roomID]["chatHistory"].push({
@@ -58,7 +65,7 @@ function init(server) {
             io.to(socket.data.roomID).emit("roomFilled", rooms[params.roomID])
             callback({
                 "status": "ok",
-                "params.roomID": params.roomID
+                "roomID": params.roomID
             })
         })
 
@@ -122,7 +129,7 @@ function verifyRoomRequest(socketID, roomID, callback){
         })
         return false
     }
-    if(!socketID !== roomID){
+    if(!socketID in rooms[roomID]["players"]){
         callback({
             "status": "error",
             "errorMessage": "you're not in this room"
