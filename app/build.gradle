@@ -16,6 +16,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 
     buildTypes {
         release {
@@ -33,6 +36,8 @@ android {
 }
 
 dependencies {
+    //Google lens ml kit api
+    implementation 'com.google.mlkit:image-labeling:17.0.7'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -44,9 +49,9 @@ dependencies {
 
     // CameraX core library using camera2 implementation
     implementation "androidx.camera:camera-camera2:1.2.1"
-// CameraX Lifecycle Library
+    // CameraX Lifecycle Library
     implementation "androidx.camera:camera-lifecycle:1.2.1"
-// CameraX View class
+    // CameraX View class
     implementation "androidx.camera:camera-view:1.2.1"
 
     testImplementation 'junit:junit:4.13.2'

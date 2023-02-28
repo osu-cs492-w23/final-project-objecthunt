@@ -1,17 +1,17 @@
 package com.example.googlelenstest
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -28,31 +28,48 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.logging.*
+import java.util.logging.Logger
 
 
 class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
-
     private lateinit var viewFinder: PreviewView
-
     private lateinit var outputDirectory: File
-
     private lateinit var mSocket: Socket
+    private var imageLabelingStarted = false
+    private lateinit var tvImageResult: TextView
+    private lateinit var tvPredictionConfidence: TextView
+    private lateinit var imageAnalyzer: ImageLabelAnalyzer
+
+    //Image analyzer build
+    private var imageAnalysis = ImageAnalysis.Builder()
+        .setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+        .build()
 
     private val opts = IO.Options().apply {
         transports = listOf(WebSocket.NAME).toTypedArray()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidLoggingHandler.reset(AndroidLoggingHandler())
+        //AndroidLoggingHandler.reset(AndroidLoggingHandler())
         Logger.getLogger("my.category").level = Level.FINEST
         setContentView(R.layout.activity_main)
+        tvImageResult = findViewById(R.id.tv_img_label)
+        tvPredictionConfidence = findViewById(R.id.tv_prediction_accuracy)
+        imageAnalyzer = ImageLabelAnalyzer()
+        //Dynamically observe LiveData changes from the ImageAnalyzer
+        imageAnalyzer.imageResult.observe(this) { img ->
+            tvImageResult.text = img
+        }
+        imageAnalyzer.imagePrediction.observe(this) { prediction ->
+            tvPredictionConfidence.text = "$prediction%"
+        }
         viewFinder = findViewById(R.id.pvv_main_preview)
         val cameraCaptureButton = findViewById<Button>(R.id.btn_main_picture_taking)
-
-
         try {
             mSocket = IO.socket("http://192.168.8.162:3000", opts)
         } catch (e: URISyntaxException) {
@@ -61,20 +78,27 @@ class MainActivity : AppCompatActivity() {
         mSocket.on(Socket.EVENT_CONNECT, onConnect);
         mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-
         mSocket.connect()
 
-        // Request camera permissions
-//        if (allPermissionsGranted()) {
-//            startCamera()
-//        } else {
-//            ActivityCompat.requestPermissions(
-//                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-//            )
-//        }
+         // camera permissions
+        if (allPermissionsGranted()) {
+          startCamera()
+        } else {
+            ActivityCompat.requestPermissions(
+               this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+           )
+        }
 
         // Set up the listener for take photo button
         cameraCaptureButton.setOnClickListener {
+            if (imageLabelingStarted) {
+                return@setOnClickListener
+            }
+
+            //Call Image Analysis Function
+            startImageLabeling()
+            imageLabelingStarted = true
+
             //when picture capture button is pressed, send an echo test to socket server
             println("emitting")
             mSocket.emit("echoTest", "from Android!", Ack { args ->
@@ -82,9 +106,19 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        outputDirectory = getOutputDirectory()
+        //outputDirectory = getOutputDirectory()
 
-//        cameraExecutor = Executors.newSingleThreadExecutor()
+        // cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    //start image labeling (running constantly)
+    private fun startImageLabeling(){
+        imageAnalysis.setAnalyzer(
+            ContextCompat.getMainExecutor(this),
+            imageAnalyzer
+        )
+        tvImageResult.text = imageAnalyzer.imageResult.value
+        tvPredictionConfidence.text = imageAnalyzer.imagePrediction.value.toString()
     }
 
     private val onConnect = Emitter.Listener {
@@ -103,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         // .runOnUiThread if you want to do something in the UI
     }
 
-
+/*
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
             File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
@@ -111,6 +145,7 @@ class MainActivity : AppCompatActivity() {
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
+ */
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -125,9 +160,6 @@ class MainActivity : AppCompatActivity() {
                 .also {
                     it.setSurfaceProvider(viewFinder.surfaceProvider)
                 }
-
-            imageCapture = ImageCapture.Builder().build()
-
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -135,10 +167,9 @@ class MainActivity : AppCompatActivity() {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
+                // Bind use cases to camera image analysis
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
-                )
+                    this, cameraSelector, preview, imageAnalysis)
 
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -146,7 +177,7 @@ class MainActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
     }
-
+/*
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
@@ -180,7 +211,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, msg)
                 }
             })
-    }
+    } */
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
@@ -224,7 +255,7 @@ class MainActivity : AppCompatActivity() {
 
 /**
  * Make JUL work on Android.
- */
+
 class AndroidLoggingHandler : Handler() {
     override fun close() {}
     override fun flush() {}
@@ -270,3 +301,4 @@ class AndroidLoggingHandler : Handler() {
         }
     }
 }
+ */
