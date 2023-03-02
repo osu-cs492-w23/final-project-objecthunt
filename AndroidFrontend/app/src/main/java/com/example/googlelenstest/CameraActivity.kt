@@ -3,10 +3,8 @@ package com.example.googlelenstest
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -23,15 +21,13 @@ import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
 import java.io.File
 import java.net.URISyntaxException
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.logging.*
 import java.util.logging.Logger
 
 
-class MainActivity : AppCompatActivity() {
+class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var viewFinder: PreviewView

@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.camera.any" />
+    <!-- Needed only if your app targets Android 5.0 (API level 21) or higher. -->
+    <uses-feature android:name="android.hardware.location.gps" />
 
 
     <application
@@ -15,9 +22,7 @@
         android:theme="@style/Theme.Chatting"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".activities.TestActivity"
-            android:exported="false" />
+
         <activity
             android:name=".activities.JoinActivity"
             android:exported="false" />
@@ -28,6 +33,10 @@
             android:name=".activities.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name="com.example.googlelenstest.CameraActivity"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
