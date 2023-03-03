@@ -1,0 +1,506 @@
+{
+  "cropHintsAnnotation": {
+    "cropHints": [
+      {
+        "boundingPoly": {
+          "vertices": [
+            {
+              "x": 51
+            },
+            {
+              "x": 467
+            },
+            {
+              "x": 467,
+              "y": 518
+            },
+            {
+              "x": 51,
+              "y": 518
+            }
+          ]
+        },
+        "confidence": 0.28564456,
+        "importanceFraction": 1
+      },
+      {
+        "boundingPoly": {
+          "vertices": [
+            {},
+            {
+              "x": 518
+            },
+            {
+              "x": 518,
+              "y": 518
+            },
+            {
+              "y": 518
+            }
+          ]
+        },
+        "confidence": 0.22851563,
+        "importanceFraction": 1
+      },
+      {
+        "boundingPoly": {
+          "vertices": [
+            {
+              "y": 43
+            },
+            {
+              "x": 518,
+              "y": 43
+            },
+            {
+              "x": 518,
+              "y": 475
+            },
+            {
+              "y": 475
+            }
+          ]
+        },
+        "confidence": 0.27421877,
+        "importanceFraction": 1
+      }
+    ]
+  },
+  "imagePropertiesAnnotation": {
+    "cropHints": [
+      {
+        "boundingPoly": {
+          "vertices": [
+            {
+              "x": 51
+            },
+            {
+              "x": 467
+            },
+            {
+              "x": 467,
+              "y": 518
+            },
+            {
+              "x": 51,
+              "y": 518
+            }
+          ]
+        },
+        "confidence": 0.28564456,
+        "importanceFraction": 1
+      },
+      {
+        "boundingPoly": {
+          "vertices": [
+            {},
+            {
+              "x": 518
+            },
+            {
+              "x": 518,
+              "y": 518
+            },
+            {
+              "y": 518
+            }
+          ]
+        },
+        "confidence": 0.22851563,
+        "importanceFraction": 1
+      },
+      {
+        "boundingPoly": {
+          "vertices": [
+            {
+              "y": 43
+            },
+            {
+              "x": 518,
+              "y": 43
+            },
+            {
+              "x": 518,
+              "y": 475
+            },
+            {
+              "y": 475
+            }
+          ]
+        },
+        "confidence": 0.27421877,
+        "importanceFraction": 1
+      }
+    ],
+    "dominantColors": {
+      "colors": [
+        {
+          "color": {
+            "blue": 203,
+            "green": 234,
+            "red": 252
+          },
+          "hex": "FCEACB",
+          "percent": 56.652916643593564,
+          "percentRounded": 57,
+          "pixelFraction": 0.17609696,
+          "rgb": "252, 234,\n 203",
+          "score": 0.5203443
+        },
+        {
+          "color": {
+            "blue": 49,
+            "green": 53,
+            "red": 64
+          },
+          "hex": "403531",
+          "percent": 1.3929305633224804,
+          "percentRounded": 1,
+          "pixelFraction": 0.007983218,
+          "rgb": "64, 53,\n 49",
+          "score": 0.012793754
+        },
+        {
+          "color": {
+            "blue": 106,
+            "green": 79,
+            "red": 74
+          },
+          "hex": "4A4F6A",
+          "percent": 1.325229178041326,
+          "percentRounded": 1,
+          "pixelFraction": 0.04632597,
+          "rgb": "74, 79,\n 106",
+          "score": 0.012171932
+        },
+        {
+          "color": {
+            "blue": 16,
+            "green": 18,
+            "red": 38
+          },
+          "hex": "261210",
+          "percent": 0.11851246048355489,
+          "percentRounded": 0,
+          "pixelFraction": 0.00011654333,
+          "rgb": "38, 18,\n 16",
+          "score": 0.0010885103
+        },
+        {
+          "color": {
+            "blue": 164,
+            "green": 191,
+            "red": 212
+          },
+          "hex": "D4BFA4",
+          "percent": 11.073543829567809,
+          "percentRounded": 11,
+          "pixelFraction": 0.03082571,
+          "rgb": "212, 191,\n 164",
+          "score": 0.10170801
+        },
+        {
+          "color": {
+            "blue": 227,
+            "green": 236,
+            "red": 250
+          },
+          "hex": "FAECE3",
+          "percent": 9.999328744589747,
+          "percentRounded": 10,
+          "pixelFraction": 0.34654158,
+          "rgb": "250, 236,\n 227",
+          "score": 0.091841586
+        },
+        {
+          "color": {
+            "blue": 128,
+            "green": 155,
+            "red": 176
+          },
+          "hex": "B09B80",
+          "percent": 9.511458335667019,
+          "percentRounded": 10,
+          "pixelFraction": 0.027620768,
+          "rgb": "176, 155,\n 128",
+          "score": 0.087360606
+        },
+        {
+          "color": {
+            "blue": 93,
+            "green": 118,
+            "red": 139
+          },
+          "hex": "8B765D",
+          "percent": 5.088859805839735,
+          "percentRounded": 5,
+          "pixelFraction": 0.013227668,
+          "rgb": "139, 118,\n 93",
+          "score": 0.046740033
+        },
+        {
+          "color": {
+            "blue": 163,
+            "green": 174,
+            "red": 225
+          },
+          "hex": "E1AEA3",
+          "percent": 3.12148578324917,
+          "percentRounded": 3,
+          "pixelFraction": 0.008682477,
+          "rgb": "225, 174,\n 163",
+          "score": 0.028670145
+        },
+        {
+          "color": {
+            "blue": 142,
+            "green": 153,
+            "red": 200
+          },
+          "hex": "C8998E",
+          "percent": 1.7157346556455972,
+          "percentRounded": 2,
+          "pixelFraction": 0.0047200047,
+          "rgb": "200, 153,\n 142",
+          "score": 0.015758637
+        }
+      ]
+    }
+  },
+  "labelAnnotations": [
+    {
+      "description": "Hairstyle",
+      "mid": "/m/0ds4x",
+      "score": 0.9509009,
+      "topicality": 0.9509009
+    },
+    {
+      "description": "Cartoon",
+      "mid": "/m/0215n",
+      "score": 0.94579464,
+      "topicality": 0.94579464
+    },
+    {
+      "description": "Facial expression",
+      "mid": "/m/01k74n",
+      "score": 0.9326752,
+      "topicality": 0.9326752
+    },
+    {
+      "description": "Human body",
+      "mid": "/m/02p0tk3",
+      "score": 0.8860733,
+      "topicality": 0.8860733
+    },
+    {
+      "description": "Gesture",
+      "mid": "/m/0244x1",
+      "score": 0.85260487,
+      "topicality": 0.85260487
+    },
+    {
+      "description": "Art",
+      "mid": "/m/0jjw",
+      "score": 0.8286934,
+      "topicality": 0.8286934
+    },
+    {
+      "description": "Happy",
+      "mid": "/m/016pp7",
+      "score": 0.7943322,
+      "topicality": 0.7943322
+    },
+    {
+      "description": "Illustration",
+      "mid": "/m/01kr8f",
+      "score": 0.7639897,
+      "topicality": 0.7639897
+    },
+    {
+      "description": "Tableware",
+      "mid": "/m/04brg2",
+      "score": 0.7471305,
+      "topicality": 0.7471305
+    },
+    {
+      "description": "Uniform",
+      "mid": "/m/09jfs",
+      "score": 0.72842234,
+      "topicality": 0.72842234
+    },
+    {
+      "description": "Fictional character",
+      "mid": "/m/02h7lkt",
+      "score": 0.72679406,
+      "topicality": 0.72679406
+    },
+    {
+      "description": "Fun",
+      "mid": "/m/0ds99lh",
+      "score": 0.7017687,
+      "topicality": 0.7017687
+    },
+    {
+      "description": "Drawing",
+      "mid": "/m/02csf",
+      "score": 0.68905133,
+      "topicality": 0.68905133
+    },
+    {
+      "description": "Sharing",
+      "mid": "/m/06h12k",
+      "score": 0.67809725,
+      "topicality": 0.67809725
+    },
+    {
+      "description": "Animation",
+      "mid": "/m/0hcr",
+      "score": 0.6655718,
+      "topicality": 0.6655718
+    },
+    {
+      "description": "Animated cartoon",
+      "mid": "/m/095bb",
+      "score": 0.6618429,
+      "topicality": 0.6618429
+    },
+    {
+      "description": "Tie",
+      "mid": "/m/01rkbr",
+      "score": 0.648666,
+      "topicality": 0.648666
+    },
+    {
+      "description": "Recreation",
+      "mid": "/m/06bm2",
+      "score": 0.6325547,
+      "topicality": 0.6325547
+    },
+    {
+      "description": "Formal wear",
+      "mid": "/m/02w3_2",
+      "score": 0.60330427,
+      "topicality": 0.60330427
+    },
+    {
+      "description": "Graphics",
+      "mid": "/m/021sdg",
+      "score": 0.5918503,
+      "topicality": 0.5918503
+    },
+    {
+      "description": "Gambling",
+      "mid": "/m/034dj",
+      "score": 0.5605692,
+      "topicality": 0.5605692
+    },
+    {
+      "description": "Clip art",
+      "mid": "/m/03g09t",
+      "score": 0.55480796,
+      "topicality": 0.55480796
+    },
+    {
+      "description": "Suit",
+      "mid": "/m/01xyhv",
+      "score": 0.54157525,
+      "topicality": 0.54157525
+    },
+    {
+      "description": "Fiction",
+      "mid": "/m/02xlf",
+      "score": 0.5305475,
+      "topicality": 0.5305475
+    },
+    {
+      "description": "Anime",
+      "mid": "/m/0jxy",
+      "score": 0.5280627,
+      "topicality": 0.5280627
+    }
+  ],
+  "localizedObjectAnnotations": [
+    {
+      "boundingPoly": {
+        "normalizedVertices": [
+          {
+            "x": 0.42523208,
+            "y": 0.735523
+          },
+          {
+            "x": 0.54967505,
+            "y": 0.735523
+          },
+          {
+            "x": 0.54967505,
+            "y": 0.96163106
+          },
+          {
+            "x": 0.42523208,
+            "y": 0.96163106
+          }
+        ]
+      },
+      "mid": "/m/01rkbr",
+      "name": "Tie",
+      "score": 0.8625995
+    },
+    {
+      "boundingPoly": {
+        "normalizedVertices": [
+          {
+            "x": 0.15660097,
+            "y": 0.7407916
+          },
+          {
+            "x": 0.37427846,
+            "y": 0.7407916
+          },
+          {
+            "x": 0.37427846,
+            "y": 0.9418985
+          },
+          {
+            "x": 0.15660097,
+            "y": 0.9418985
+          }
+        ]
+      },
+      "mid": "/m/04brg2",
+      "name": "Tableware",
+      "score": 0.7260096
+    },
+    {
+      "boundingPoly": {
+        "normalizedVertices": [
+          {
+            "x": 0.0725607,
+            "y": 0.057496127
+          },
+          {
+            "x": 0.9048655,
+            "y": 0.057496127
+          },
+          {
+            "x": 0.9048655,
+            "y": 0.99417806
+          },
+          {
+            "x": 0.0725607,
+            "y": 0.99417806
+          }
+        ]
+      },
+      "mid": "/m/01g317",
+      "name": "Person",
+      "score": 0.50953513
+    }
+  ],
+  "safeSearchAnnotation": {
+    "adult": "VERY_UNLIKELY",
+    "medical": "VERY_UNLIKELY",
+    "racy": "UNLIKELY",
+    "spoof": "VERY_UNLIKELY",
+    "violence": "UNLIKELY"
+  }
+}
