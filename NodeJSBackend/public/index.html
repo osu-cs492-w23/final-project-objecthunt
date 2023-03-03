@@ -66,10 +66,8 @@
 
 <div id="gameRoomDiv">
     <h1 id="gameCurrentItem"></h1>
-    <form id="gameUploadForm">
-        <input type="file" id="myFile" name="filename">
-        <input type="submit">
-    </form>
+    <input type="file" id="imageInput" name="filename" accept="image/*;capture=camera">
+    <button id="submitImage" onclick="socketSubmitPicture()">Submit</button>
 </div>
 </body>
 

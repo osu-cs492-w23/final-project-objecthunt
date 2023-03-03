@@ -26,7 +26,8 @@ let readyTxt
 let readyBtn
 let unreadyBtn
 let gameRoomDiv
-let gameUploadForm
+let imageInput
+let submitImage
 let gameCurrentItem
 
 window.onload = () => {
@@ -58,18 +59,8 @@ window.onload = () => {
     unreadyBtn.style.display = "none"
     gameRoomDiv = document.getElementById("gameRoomDiv")
     gameRoomDiv.style.display = "none"
-    gameUploadForm = document.getElementById("gameUploadForm")
-
-    gameUploadForm.addEventListener('submit', function(e) {
-        e.preventDefault()
-        let file = e.target.filename.files[0]
-        console.log(file)
-        socket.emit("submitAnswer", currentItem, file, (response)=>{
-            if(response["status"] === "ok"){
-                currentItem = response["newItem"]
-            }
-        })
-    })
+    submitImage = document.getElementById("submitImage")
+    imageInput = document.getElementById("imageInput")
 
     gameCurrentItem = document.getElementById("gameCurrentItem")
 }
@@ -188,6 +179,15 @@ function socketUnReady() {
     })
 }
 
+function socketSubmitPicture(){
+    let file = imageInput.files[0]
+    console.log(file)
+    socket.emit("submitAnswer", currentItem, file, (response)=>{
+        if(response["status"] === "ok"){
+            currentItem = response["newItem"]
+        }
+    })
+}
 socket.on("roomFilled", (room) => {
     currentRoom = room
     socketUpdateChat()

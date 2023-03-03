@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 
 const fs = require("fs")
+const {quickstart} = require("./gameLogic");
 
 let io
 const maxPlayerNumberInRoom = 2
@@ -124,6 +125,8 @@ function init(server) {
             callback({
                 "status": "ok"
             })
+            if(Object.keys(rooms[socket.data.roomID]["players"]).length < 2)
+                return
             for(let player in rooms[socket.data.roomID]["players"]){
                 if(!rooms[socket.data.roomID]["players"][player]["ready"])
                     return
@@ -150,16 +153,26 @@ function init(server) {
         socket.on("submitAnswer", (item, file, callback) => {
             callback = checkCallback(callback, socket.id,  "submitAnswer")
             if(!verifyRoomRequest(socket, callback)) return
-            console.log("item: ", item)
-            console.log(file)
-            fs.writeFile("sth.png", file, (err) => {
-                if(!err) console.log('Data written');
-                else console.log(err)
+            console.log("player ", socket.id, " submitted an answer...")
+            let currentRoom = rooms[socket.data.roomID]
+            let currentPlayer = currentRoom["players"][socket.id]
+            quickstart(file).then(detectedTags => {
+                let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
+                if(detectedTags.indexOf(playersCurrentItem) > -1){
+                    currentPlayer["itemIndex"]+=1
+                    let item = currentRoom["items"][currentPlayer["itemIndex"]]
+                    console.log("player ", socket.id, "'s answer was correct! Their new item is ", item)
+                    callback({
+                        "status": "ok",
+                        "newItem": item
+                    })
+                }
             })
         })
 
         socket.on("disconnect", ()=>{
             socket.to(socket.data.roomID).emit("opponent disconnected")
+            console.log("connection dropped by id: ", socket.id)
             delete rooms[socket.data.roomID]
         })
     })
@@ -167,10 +180,10 @@ function init(server) {
 
 async function startGame(room) {
     room["inGame"] = true
+    shuffleArray(room["items"])
     let sockets = await io.in(room["roomID"]).fetchSockets()
     sockets.forEach(socket=>{
-        let item = getRandom(room["items"])
-        room["players"][socket.id]["items"].push(item)
+        let item = room["items"][room["players"][socket.id]["itemIndex"]]
         socket.emit("itemGenerated", item)
     })
 }
@@ -179,7 +192,23 @@ function getRandom(array){
     return array[Math.floor(Math.random()*array.length)]
 }
 
+function shuffleArray(array){
+        let m = array.length, t, i;
 
+        // While there remain elements to shuffle…
+        while (m) {
+
+            // Pick a remaining element…
+            i = Math.floor(Math.random() * m--);
+
+            // And swap it with the current element.
+            t = array[m];
+            array[m] = array[i];
+            array[i] = t;
+        }
+
+        return array;
+}
 
 function checkCallback(callback, socketID, functionName){
     if(typeof callback !== 'function') {
@@ -220,7 +249,7 @@ function getNewPlayer(nickname, ready = false, score = 0){
         "nickname": nickname,
         "ready": ready,
         "score": score,
-        "items": [],
+        "itemIndex": 0,
         "pictures": []
     }
 }
@@ -231,7 +260,7 @@ function getNewRoom(roomID, params){
         "players": {
             [roomID]: getNewPlayer(params.nickname)
         },
-        "items": params.itemsList,
+        "items": params.itemsList.map(item=>item.toLowerCase()),
         "timeLimit": params.timeLimit,
         "chatHistory":[{
             "body": params.nickname + " joined.",
