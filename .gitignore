@@ -3,3 +3,4 @@
 /AndroidFrontend/.idea/
 /AndroidFrontend/.gradle/
 /NodeJSBackend/creds
+**/build
