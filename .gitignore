@@ -1,6 +1,5 @@
-/NodeJSBackend/node_modules/
-/NodeJSBackend/.idea/
-/AndroidFrontend/.idea/
-/AndroidFrontend/.gradle/
 /NodeJSBackend/creds
 **/build
+**/.idea
+**/.gradle
+**/node_modules
