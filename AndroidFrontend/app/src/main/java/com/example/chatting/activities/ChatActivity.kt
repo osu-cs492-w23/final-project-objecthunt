@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -15,6 +16,7 @@ import com.example.chatting.R
 import com.example.chatting.SocketHandler
 import com.example.chatting.data.Message
 import com.example.chatting.ui.ChatAdapter
+import io.socket.client.Ack
 
 
 /******* MEMO
@@ -29,7 +31,12 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        //val mSocket = SocketHandler.getSocket()
+        // connect to the node server
+        SocketHandler.setSocket()
+        SocketHandler.establishConnection()
+
+        val mSocket = SocketHandler.getSocket()
+
         //val thisUser = ""
 
         val ready = Color.parseColor("#303131")
@@ -86,6 +93,9 @@ class ChatActivity : AppCompatActivity() {
                 // mSocket.emit("sendChat", message, roomID)
                 chatListRV.scrollToPosition(adapter.itemCount - 1)
                 chatEntry.setText("")
+                mSocket.emit("echoTest", "from Android!", Ack { args ->
+                    Log.d("ChatActivity", "Ack $args")
+                })
             }
             hideSoftKeyboard()
         }
