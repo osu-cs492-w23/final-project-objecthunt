@@ -9,8 +9,9 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlin.math.roundToInt
-
-
+//Documentation for the Google ML KIT API
+//https://developers.google.com/ml-kit/vision/image-labeling
+//https://developers.google.com/ml-kit/vision/image-labeling/android
 class ImageLabelAnalyzer: ImageAnalysis.Analyzer {
 
     private val labeler = ImageLabeling.getClient(
