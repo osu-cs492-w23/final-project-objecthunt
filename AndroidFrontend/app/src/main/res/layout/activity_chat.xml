@@ -30,7 +30,8 @@
         android:overScrollMode="never"
         android:padding="15dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/buttonReady"/>
+        app:layout_constraintBottom_toTopOf="@+id/send_button"
+        app:layout_constraintTop_toBottomOf="@id/buttonReady" />
 
     <EditText
         android:id="@+id/chatbox"
