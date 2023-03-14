@@ -82,37 +82,41 @@ function prepGamePage() {
 
 function socketCreateRoom() {
     console.log("attempting to create room")
-    if (nicknameInput.value.length > 0)
-        socket.emit("createRoom", {
-            "itemsList": itemsList,
-            "timeLimit": parseInt(timeLimitMinutesInput.value) * 60 + parseInt(timeLimitSecondsInput.value),
-            "nickname": nicknameInput.value
-        }, (response) => {
-            console.log("createRoom Ack: ", response)
-            if (response["status"] === "ok") {
-                currentRoom = response["room"]
-                roomID = currentRoom["roomID"]
-                prepChatPage()
-            }
-        })
-    else
+    if (nicknameInput.value.length < 1) {
         console.log("Username is empty")
+        return
+    }
+    socket.emit("createRoom", {
+        "itemsList": itemsList,
+        "timeLimit": parseInt(timeLimitMinutesInput.value) * 60 + parseInt(timeLimitSecondsInput.value),
+        "nickname": nicknameInput.value
+    }, (response) => {
+        if (response["status"] === "ok") {
+            currentRoom = response["room"]
+            roomID = currentRoom["roomID"]
+            prepChatPage()
+        } else if (response["status"] === "error") {
+            console.log("createRoom error: ", response["errorMessage"])
+        }
+    })
 }
 
 function socketJoinRoom() {
-    if (nicknameInput.value.length > 0)
-        socket.emit("joinRoom", {
-            "roomID": roomIDInput.value,
-            "nickname": nicknameInput.value
-        }, (response) => {
-            console.log("joinRoom Ack: ", response)
-            roomID = response["roomID"]
-            if (response["status"] === "ok") {
-                prepChatPage()
-            }
-        })
-    else
+    if (nicknameInput.value.length < 1) {
         console.log("Username is empty")
+        return
+    }
+    socket.emit("joinRoom", {
+        "roomID": roomIDInput.value,
+        "nickname": nicknameInput.value
+    }, (response) => {
+        if (response["status"] === "ok") {
+            roomID = response["roomID"]
+            prepChatPage()
+        } else if (response["status"] === "error") {
+            console.log("joinRoom error: ", response["errorMessage"])
+        }
+    })
 }
 
 function addSearchItem() {
@@ -137,64 +141,73 @@ function removeSearchItem() {
 
 function socketUpdateChat() {
     socket.emit("getChatHistory", (response) => {
-        console.log("socketUpdateChat Ack: ", response)
         if (response["status"] === "ok") {
             chatWindow.innerHTML = response["chatHistory"].map((item) => {
                 let senderNickname = item["sender"] === "System" ? "System" : currentRoom["players"][item["sender"]]["nickname"]
                 let time = new Date(item["timeStamp"])
                 return "<p>" + time.toLocaleTimeString() + " | " + senderNickname + ": " + item["body"] + "</p>"
             }).join("")
+        } else if (response["status"] === "error") {
+            console.log("getChatHistory error: ", response["errorMessage"])
         }
     })
 }
 
 function socketSendChat() {
     socket.emit("sendChat", chatBoxInput.value, (response) => {
-        console.log("socketSendChat Ack: ", response)
-        chatBoxInput.value = ""
+        if (response["status"] === "ok")
+            chatBoxInput.value = ""
+        else if (response["status"] === "error") {
+            console.log("sendChat error: ", response["errorMessage"])
+        }
     })
 }
 
 function socketReady() {
     socket.emit("ready", (response) => {
-        console.log("socketReady Ack: ", response)
         if (response["status"] === "ok") {
             readyBtn.style.display = "none"
             readyTxt.style.display = "block"
             unreadyBtn.style.display = "block"
             socketUpdateChat()
+        } else if (response["status"] === "error") {
+            console.log("ready error: ", response["errorMessage"])
         }
     })
 }
 
 function socketUnReady() {
     socket.emit("unready", (response) => {
-        console.log("socketUnready Ack: ", response)
         if (response["status"] === "ok") {
             readyBtn.style.display = "block"
             readyTxt.style.display = "none"
             unreadyBtn.style.display = "none"
             socketUpdateChat()
+        } else if (response["status"] === "error") {
+            console.log("unready error: ", response["errorMessage"])
         }
     })
 }
 
-function socketSubmitPicture(){
+function socketSubmitPicture() {
     let file = imageInput.files[0]
     console.log(file)
-    socket.emit("submitAnswer", currentItem, file, (response)=>{
-        if(response["status"] === "ok"){
+    socket.emit("submitAnswer", currentItem, file, (response) => {
+        if (response["status"] === "ok") {
             currentItem = response["newItem"]
+        } else if (response["status"] === "error") {
+            console.log("submitAnswer error: ", response["errorMessage"])
         }
     })
 }
+
 socket.on("roomFilled", (room) => {
     currentRoom = room
     socketUpdateChat()
 })
 
 socket.on("chatUpdated", (newMessage) => {
-    let senderNickname = newMessage["senfder"] === "System" ? "System" : currentRoom["players"][newMessage["sender"]]["nickname"]
+    let senderNickname = newMessage["sender"] === "System" ? "System" : currentRoom["players"][newMessage["sender"]]["nickname"]
     let time = new Date(newMessage["timeStamp"])
     chatWindow.innerHTML = chatWindow.innerHTML + "<p>" + time.toLocaleTimeString() + " " + senderNickname + ": " + newMessage["body"] + "</p>"
 })
@@ -213,12 +226,12 @@ socket.on("roomReadied", () => {
     prepGamePage()
 })
 
-socket.on("itemGenerated", (item) =>{
+socket.on("itemGenerated", (item) => {
     gameCurrentItem.textContent = "Current item: " + item
     currentItem = item
 })
 
-socket.on("opponent disconnected", ()=>{
+socket.on("opponent disconnected", () => {
     roomID = ""
     currentRoom = {}
     itemsList = []

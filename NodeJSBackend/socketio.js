@@ -1,7 +1,6 @@
 const { Server } = require("socket.io");
 
-const fs = require("fs")
-const {quickstart} = require("./gameLogic");
+const {checkImage} = require("./gameLogic");
 
 let io
 const maxPlayerNumberInRoom = 2
@@ -92,6 +91,13 @@ function init(server) {
         socket.on("sendChat", (message, callback)=>{
             callback = checkCallback(callback, socket.id,  "sendChat")
             if(!verifyRoomRequest(socket, callback)) return
+            if(message.length < 1){
+                callback({
+                    "status": "error",
+                    "errorMessage": "message is empty"
+                })
+                return
+            }
             let newMessage = {
                 "body": message,
                 "timeStamp": Date.now(),
@@ -156,7 +162,7 @@ function init(server) {
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
-            quickstart(file).then(detectedTags => {
+            checkImage(file).then(detectedTags => {
                 let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
                 if(detectedTags.indexOf(playersCurrentItem) > -1){
                     currentPlayer["itemIndex"]+=1
@@ -182,14 +188,11 @@ async function startGame(room) {
     room["inGame"] = true
     shuffleArray(room["items"])
     let sockets = await io.in(room["roomID"]).fetchSockets()
+    
     sockets.forEach(socket=>{
         let item = room["items"][room["players"][socket.id]["itemIndex"]]
         socket.emit("itemGenerated", item)
     })
-}
-
-function getRandom(array){
-    return array[Math.floor(Math.random()*array.length)]
 }
 
 function shuffleArray(array){
