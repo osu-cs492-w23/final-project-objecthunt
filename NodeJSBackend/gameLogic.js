@@ -1,5 +1,5 @@
 
-async function quickstart(buffer) {
+async function checkImage(buffer) {
     // Imports the Google Cloud client library
     const vision = require('@google-cloud/vision');
 
@@ -20,5 +20,5 @@ async function quickstart(buffer) {
 }
 
 module.exports = {
-    "quickstart": quickstart
+    "checkImage": checkImage
 }
