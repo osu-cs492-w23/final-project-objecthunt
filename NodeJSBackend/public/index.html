@@ -66,8 +66,16 @@
 
 <div id="gameRoomDiv">
     <h1 id="gameCurrentItem"></h1>
+    <h2 id="timeLeft">Time left: </h2>
     <input type="file" id="imageInput" name="filename" accept="image/*;capture=camera">
     <button id="submitImage" onclick="socketSubmitPicture()">Submit</button>
+</div>
+
+<div id="gameResultDiv">
+    <h1>Game ended</h1>
+    <p id="winnerText"></p>
+    <div id="submittedPictures"></div>
+    <button id="newRoomBtn" onclick="location.reload()">Go back to main menu</button>
 </div>
 </body>
 
