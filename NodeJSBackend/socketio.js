@@ -1,10 +1,11 @@
-const { Server } = require("socket.io");
+const {Server} = require("socket.io");
 
 const {checkImage} = require("./gameLogic");
 
 let io
 const maxPlayerNumberInRoom = 2
 let rooms = {}
+
 function init(server) {
     console.log("server initializing")
     io = new Server(server)
@@ -17,14 +18,14 @@ function init(server) {
             callback({
                 "message": message
             })
-            socket.emit("echoTest2", ()=>{
+            socket.emit("echoTest2", () => {
                 console.log("returned from Android")
             })
         })
 
-        socket.on("createRoom", (params, callback)=>{
-            callback = checkCallback(callback, socket.id,  "createRoom")
-            if(rooms[socket.id] !== undefined){
+        socket.on("createRoom", (params, callback) => {
+            callback = checkCallback(callback, socket.id, "createRoom")
+            if (rooms[socket.id] !== undefined) {
                 callback({
                     "status": "error",
                     "errorMessage": "room already existed"
@@ -40,16 +41,16 @@ function init(server) {
             })
         })
 
-        socket.on("joinRoom", (params, callback)=>{
-            callback = checkCallback(callback, socket.id,  "joinRoom")
-            if(rooms[params.roomID] === null || rooms[params.roomID] === undefined){
+        socket.on("joinRoom", (params, callback) => {
+            callback = checkCallback(callback, socket.id, "joinRoom")
+            if (rooms[params.roomID] === null || rooms[params.roomID] === undefined) {
                 callback({
                     "status": "error",
                     "errorMessage": "room not found"
                 })
                 return
             }
-            if(Object.keys(rooms[params.roomID]["players"]).length >= maxPlayerNumberInRoom){
+            if (Object.keys(rooms[params.roomID]["players"]).length >= maxPlayerNumberInRoom) {
                 callback({
                     "status": "error",
                     "errorMessage": "room is full"
@@ -71,11 +72,11 @@ function init(server) {
             })
         })
 
-        socket.on("getOpponentInfo", (callback)=>{
-            callback = checkCallback(callback, socket.id,  "getOpponentInfo")
-            if(!verifyRoomRequest(socket, callback)) return
-            for (let i in rooms[socket.data.roomID]["players"]){
-                if(i["id"] !== socket.id){
+        socket.on("getOpponentInfo", (callback) => {
+            callback = checkCallback(callback, socket.id, "getOpponentInfo")
+            if (!verifyRoomRequest(socket, callback)) return
+            for (let i in rooms[socket.data.roomID]["players"]) {
+                if (i["id"] !== socket.id) {
                     callback({
                         "status": "ok",
                         "nickname": i["nickname"]
@@ -88,10 +89,10 @@ function init(server) {
             })
         })
 
-        socket.on("sendChat", (message, callback)=>{
-            callback = checkCallback(callback, socket.id,  "sendChat")
-            if(!verifyRoomRequest(socket, callback)) return
-            if(message.length < 1){
+        socket.on("sendChat", (message, callback) => {
+            callback = checkCallback(callback, socket.id, "sendChat")
+            if (!verifyRoomRequest(socket, callback)) return
+            if (message.length < 1) {
                 callback({
                     "status": "error",
                     "errorMessage": "message is empty"
@@ -110,17 +111,17 @@ function init(server) {
             io.to(socket.data.roomID).emit("chatUpdated", newMessage)
         })
 
-        socket.on("getChatHistory", (callback)=>{
-            callback = checkCallback(callback, socket.id,  "getChatHistory")
-            if(!verifyRoomRequest(socket, callback)) return
+        socket.on("getChatHistory", (callback) => {
+            callback = checkCallback(callback, socket.id, "getChatHistory")
+            if (!verifyRoomRequest(socket, callback)) return
             callback({
                 "status": "ok",
                 "chatHistory": rooms[socket.data.roomID]["chatHistory"]
             })
         })
-        socket.on("ready", (callback)=>{
-            callback = checkCallback(callback, socket.id,  "ready")
-            if(!verifyRoomRequest(socket, callback)) return
+        socket.on("ready", (callback) => {
+            callback = checkCallback(callback, socket.id, "ready")
+            if (!verifyRoomRequest(socket, callback)) return
             rooms[socket.data.roomID]["players"][socket.id]["ready"] = true
             rooms[socket.data.roomID]["chatHistory"].push({
                 "body": rooms[socket.data.roomID]["players"][socket.id]["nickname"] + " has readied.",
@@ -131,19 +132,19 @@ function init(server) {
             callback({
                 "status": "ok"
             })
-            if(Object.keys(rooms[socket.data.roomID]["players"]).length < 2)
+            if (Object.keys(rooms[socket.data.roomID]["players"]).length < 2)
                 return
-            for(let player in rooms[socket.data.roomID]["players"]){
-                if(!rooms[socket.data.roomID]["players"][player]["ready"])
+            for (let player in rooms[socket.data.roomID]["players"]) {
+                if (!rooms[socket.data.roomID]["players"][player]["ready"])
                     return
             }
             io.to(socket.data.roomID).emit("roomReadied")
             startGame(rooms[socket.data.roomID])
         })
 
-        socket.on("unready", (callback)=>{
-            callback = checkCallback(callback, socket.id,  "unready")
-            if(!verifyRoomRequest(socket, callback)) return
+        socket.on("unready", (callback) => {
+            callback = checkCallback(callback, socket.id, "unready")
+            if (!verifyRoomRequest(socket, callback)) return
             rooms[socket.data.roomID]["players"][socket.id]["ready"] = false
             rooms[socket.data.roomID]["chatHistory"].push({
                 "body": rooms[socket.data.roomID]["players"][socket.id]["nickname"] + " has unreadied.",
@@ -157,26 +158,40 @@ function init(server) {
         })
 
         socket.on("submitAnswer", (item, file, callback) => {
-            callback = checkCallback(callback, socket.id,  "submitAnswer")
-            if(!verifyRoomRequest(socket, callback)) return
+            callback = checkCallback(callback, socket.id, "submitAnswer")
+            if (!verifyRoomRequest(socket, callback)) return
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
             checkImage(file).then(detectedTags => {
                 let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
-                if(detectedTags.indexOf(playersCurrentItem) > -1){
-                    currentPlayer["itemIndex"]+=1
+                if (detectedTags.indexOf(playersCurrentItem) > -1) {
+                    currentPlayer["pictures"].push(file)
+                    currentPlayer["itemIndex"] += 1
                     let item = currentRoom["items"][currentPlayer["itemIndex"]]
-                    console.log("player ", socket.id, "'s answer was correct! Their new item is ", item)
                     callback({
                         "status": "ok",
                         "newItem": item
                     })
+                    if (item === undefined) {
+                        console.log("player", socket.id, "won!")
+                        currentPlayer["score"]++
+                        currentRoom["gameEnded"] = true
+                        io.to(socket.data.roomID).emit("gameEnded", {
+                            "winner": socket.id,
+                            "room": currentRoom
+                        })
+                        return
+                    }
+                    console.log("player ", socket.id, "'s answer was correct! Their new item is ", item)
                 }
+                callback({
+                    "status": "wrong_answer"
+                })
             })
         })
 
-        socket.on("disconnect", ()=>{
+        socket.on("disconnect", () => {
             socket.to(socket.data.roomID).emit("opponent disconnected")
             console.log("connection dropped by id: ", socket.id)
             delete rooms[socket.data.roomID]
@@ -185,59 +200,79 @@ function init(server) {
 }
 
 async function startGame(room) {
+
     room["inGame"] = true
     shuffleArray(room["items"])
     let sockets = await io.in(room["roomID"]).fetchSockets()
-    
-    sockets.forEach(socket=>{
-        let item = room["items"][room["players"][socket.id]["itemIndex"]]
-        socket.emit("itemGenerated", item)
-    })
-}
-
-function shuffleArray(array){
-        let m = array.length, t, i;
-
-        // While there remain elements to shuffle…
-        while (m) {
-
-            // Pick a remaining element…
-            i = Math.floor(Math.random() * m--);
-
-            // And swap it with the current element.
-            t = array[m];
-            array[m] = array[i];
-            array[i] = t;
+    setTimeout(
+        ()=>{
+            sockets.forEach(socket => {
+                let item = room["items"][room["players"][socket.id]["itemIndex"]]
+                socket.emit("itemGenerated", item)
+            })
         }
-
-        return array;
+        , 3000)
+    setTimeout(()=> {
+        if(room["gameEnded"])
+            return
+        const winner = Object.entries(room["players"]).reduce(([id1, player1], [id2, player2])=>{
+            if(player1["itemIndex"] > player2["itemIndex"])
+                return id1
+            if(player1["itemIndex"] < player2["itemIndex"])
+                return id2
+            return "draw"
+        }
+    )
+        io.to(room["roomID"]).emit("gameEnded", {
+            "winner": winner,
+            "room": room
+        }
+    )}, room["timeLimit"]*1000
+    )
 }
 
-function checkCallback(callback, socketID, functionName){
-    if(typeof callback !== 'function') {
+function shuffleArray(array) {
+    let m = array.length, t, i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * m--);
+
+        // And swap it with the current element.
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+
+    return array;
+}
+
+function checkCallback(callback, socketID, functionName) {
+    if (typeof callback !== 'function') {
         console.log(socketID + " triggered " + functionName + " without providing a callback")
         return (_) => {
         }
-    }
-    else return callback
+    } else return callback
 }
 
-function verifyRoomRequest(socketParam, callback){
-    if(socketParam.data === undefined || socketParam.data.roomID === undefined){
+function verifyRoomRequest(socketParam, callback) {
+    if (socketParam.data === undefined || socketParam.data.roomID === undefined) {
         callback({
             "status": "error",
             "errorMessage": "you're not in a room"
         })
         return false
     }
-    if(rooms[socketParam.data.roomID] === null || rooms[socketParam.data.roomID] === undefined){
+    if (rooms[socketParam.data.roomID] === null || rooms[socketParam.data.roomID] === undefined) {
         callback({
             "status": "error",
             "errorMessage": "room not found"
         })
         return false
     }
-    if(!socketParam.id in rooms[socketParam.data.roomID]["players"]){
+    if (!socketParam.id in rooms[socketParam.data.roomID]["players"]) {
         callback({
             "status": "error",
             "errorMessage": "you're not in the room"
@@ -247,30 +282,30 @@ function verifyRoomRequest(socketParam, callback){
     return true
 }
 
-function getNewPlayer(nickname, ready = false, score = 0){
+function getNewPlayer(nickname, ready = false) {
     return {
         "nickname": nickname,
         "ready": ready,
-        "score": score,
         "itemIndex": 0,
         "pictures": []
     }
 }
 
-function getNewRoom(roomID, params){
+function getNewRoom(roomID, params) {
     return {
         "roomID": roomID,
         "players": {
             [roomID]: getNewPlayer(params.nickname)
         },
-        "items": params.itemsList.map(item=>item.toLowerCase()),
+        "items": params.itemsList.map(item => item.toLowerCase()),
         "timeLimit": params.timeLimit,
-        "chatHistory":[{
+        "chatHistory": [{
             "body": params.nickname + " joined.",
             "timeStamp": Date.now(),
             "sender": "System"
         }],
-        "inGame": false
+        "inGame": false,
+        "gameEnded": false
     }
 }
 
