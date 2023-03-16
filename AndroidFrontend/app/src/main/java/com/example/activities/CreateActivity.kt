@@ -57,6 +57,7 @@ class CreateActivity : AppCompatActivity() {
                         Log.d("Create Activity", "Unable to create a room")
                     }
                 })
+                Log.d("Create", "Hello?")
 
                 // Need to block the back button or
                 // warn the user that if they press the back button, it will go to the main
