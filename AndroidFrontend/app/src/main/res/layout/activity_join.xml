@@ -20,39 +20,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
-            android:text="Welcome!"
+            android:text="Username"
             android:textColor="@color/primary_text"
             android:textSize="40dp"
             android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/guestusername"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/roomID"
+            android:layout_width="250dp"
+            android:layout_marginTop="80dp"
+            android:layout_height="wrap_content"/>
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonCreate"
+            android:id="@+id/buttonJoin2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
             android:padding="15dp"
-            android:text="Create your room"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonJoin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
-            android:padding="15dp"
-            android:text="Join the room"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonCamera"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:padding="15dp"
-            android:text="Camera"
+            android:text="Join"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="20dp"/>

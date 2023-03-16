@@ -1,12 +1,10 @@
-package com.example.googlelenstest
+package com.example.chatting.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.googlelenstest.ImageLabelAnalyzer
 import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -23,15 +22,13 @@ import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
 import java.io.File
 import java.net.URISyntaxException
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.logging.*
 import java.util.logging.Logger
 
 
-class MainActivity : AppCompatActivity() {
+class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var viewFinder: PreviewView
@@ -57,9 +54,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //AndroidLoggingHandler.reset(AndroidLoggingHandler())
         Logger.getLogger("my.category").level = Level.FINEST
-        setContentView(R.layout.activity_main)
-        tvImageResult = findViewById(R.id.tv_img_label)
-        tvPredictionConfidence = findViewById(R.id.tv_prediction_accuracy)
+        setContentView(com.example.chatting.R.layout.activity_google_lens)
+        tvImageResult = findViewById(com.example.chatting.R.id.tv_img_label)
+        tvPredictionConfidence = findViewById(com.example.chatting.R.id.tv_prediction_accuracy)
         imageAnalyzer = ImageLabelAnalyzer()
         //Dynamically observe LiveData changes from the ImageAnalyzer
         imageAnalyzer.imageResult.observe(this) { img ->
@@ -68,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         imageAnalyzer.imagePrediction.observe(this) { prediction ->
             tvPredictionConfidence.text = "$prediction%"
         }
-        viewFinder = findViewById(R.id.pvv_main_preview)
-        val cameraCaptureButton = findViewById<Button>(R.id.btn_main_picture_taking)
+        viewFinder = findViewById(com.example.chatting.R.id.pvv_main_preview)
+        val cameraCaptureButton = findViewById<Button>(com.example.chatting.R.id.btn_main_picture_taking)
         try {
             mSocket = IO.socket("http://192.168.8.162:3000", opts)
         } catch (e: URISyntaxException) {

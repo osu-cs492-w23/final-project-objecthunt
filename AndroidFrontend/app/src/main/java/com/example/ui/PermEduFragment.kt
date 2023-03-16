@@ -1,4 +1,4 @@
-package com.example.googlelenstest
+package com.example.chatting.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,8 +14,8 @@ class PermEduFragment: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.perm_edu, container)
-        val dismissBtn = view.findViewById<Button>(R.id.btn_perm_edu_dismiss)
+        val view = inflater.inflate(com.example.chatting.R.layout.perm_edu, container)
+        val dismissBtn = view.findViewById<Button>(com.example.chatting.R.id.btn_perm_edu_dismiss)
         dismissBtn.setOnClickListener { dismiss() }
         return view
     }

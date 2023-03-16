@@ -6,5 +6,14 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#0077b3</color>
+    <color name="primary_dark">#004d80</color>
+    <color name="primary_text">#00294d</color>
+    <color name="white">#FFFFFF</color>
+    <color name="general_background">#f2f2f5</color>
+    <color name="ready">#303131</color>
+    <color name="notready">#f08a0c</color>
+    <color name="error">#de2362</color>
+    <color name="received_message_background">#0b7288</color>
+    <color name="sent_message_background">#0da3A6</color>
 </resources>
