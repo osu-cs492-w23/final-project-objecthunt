@@ -6,30 +6,28 @@ import android.os.Bundle
 import android.widget.Button
 import com.example.chatting.R
 import com.example.chatting.activities.ChatActivity
+import com.example.chatting.activities.CreateActivity
+import com.example.chatting.activities.JoinActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        SocketHandler.setSocket()
-        SocketHandler.establishConnection()
+        //val intentCreate = Intent(this, ChatActivity::class.java)
+        val intentCreate = Intent(this, CreateActivity::class.java)
+        val intentJoin = Intent(this, JoinActivity::class.java)
 
-        val mSocket = SocketHandler.getSocket()
+        val createBtn: Button = findViewById(R.id.buttonCreate)
+        val joinBtn: Button = findViewById(R.id.buttonJoin)
 
-        val intent = Intent(this, ChatActivity::class.java)
 
-        val goButton: Button = findViewById(R.id.buttonTest)
+        createBtn.setOnClickListener {
+            startActivity(intentCreate)
+        }
 
-        goButton.setOnClickListener {
-            mSocket.emit("createRoom") /* params should be => {
-            "itemsList": itemsList,
-            "timeLimit": parseInt(timeLimitMinutesInput.value) * 60 + parseInt(timeLimitSecondsInput.value),
-            "nickname": nicknameInput.value
-        }*/
-
-            //mSocket.emit("joinRoom")
-            startActivity(intent)
+        joinBtn.setOnClickListener {
+            startActivity(intentJoin)
         }
     }
 }

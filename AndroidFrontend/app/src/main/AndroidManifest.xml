@@ -19,6 +19,12 @@
             android:name=".activities.TestActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.JoinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CreateActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>
