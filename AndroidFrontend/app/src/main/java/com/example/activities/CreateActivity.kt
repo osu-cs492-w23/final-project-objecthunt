@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
 import com.example.chatting.SocketHandler
 import io.socket.client.Ack
+import org.json.JSONArray
+import org.json.JSONObject
 
 class CreateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +36,8 @@ class CreateActivity : AppCompatActivity() {
             // Check if both values are empty or not
             if (!TextUtils.isEmpty(nickname)) {
                 mSocket.emit("echoTest", "CONNECTED")
-                mSocket.emit("createRoom", nickname, timelimits, Ack { args ->
-                    Log.d("CreateActivity", "Ack $args")
+                mSocket.emit("createRoom", JSONObject("{'nickname': ${nickname}, 'itemsList': ['mouse', 'bottle'], 'timeLimit': ${timelimits}}"), Ack { args ->
+                    Log.d("CreateActivity", "Ack ${((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}")
                     startActivity(intentChat)
                 })
                 Log.d("Create", "Hello?")
