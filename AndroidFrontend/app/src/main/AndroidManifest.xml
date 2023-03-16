@@ -34,7 +34,7 @@
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
-            android:name="com.example.googlelenstest.CameraActivity"
+            android:name=".activities.CameraActivity"
             android:exported="false" />
 
         <activity

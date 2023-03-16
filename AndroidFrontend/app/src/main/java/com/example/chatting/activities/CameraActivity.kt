@@ -1,4 +1,4 @@
-package com.example.googlelenstest
+package com.example.chatting.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,6 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.googlelenstest.ImageLabelAnalyzer
 import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
