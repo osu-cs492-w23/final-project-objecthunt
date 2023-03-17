@@ -1,5 +1,7 @@
 package com.example.chatting.ui
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.chatting.R
 import com.example.chatting.data.Message
 
-class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+class ChatAdapter(host: String) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
+    val host = host
     var messageList: List<Message> = listOf()
 
     fun updateChatList(newList: List<Message>?) {
@@ -23,7 +26,7 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
      * This part of the code can be changed.**/
     override fun getItemViewType(position: Int): Int {
         // if messageList[position].sender == thisUser
-        return if (messageList[position].sender == "You") 1 else 0
+        return if (messageList[position].sender == host) 1 else 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

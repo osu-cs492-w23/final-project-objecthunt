@@ -1,13 +1,16 @@
 package com.example.chatting.activities
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,30 +20,30 @@ import com.example.chatting.SocketHandler
 import com.example.chatting.data.Message
 import com.example.chatting.ui.ChatAdapter
 import io.socket.client.Ack
-
-
-/******* MEMO
- *
-socket.emit("sendChat", chatEntry.text.toString(), roomID, (response)->
-socket.data.roomID
-
- *******/
+import io.socket.emitter.Emitter
+import org.json.JSONObject
+import java.time.Instant
+import java.util.*
 
 class ChatActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
         // connect to the node server
-        SocketHandler.setSocket()
-        SocketHandler.establishConnection()
-
         val mSocket = SocketHandler.getSocket()
-
-        //val thisUser = ""
 
         val ready = Color.parseColor("#303131")
         val unready = Color.parseColor("#f08a0c")
+
+        val intentGame = Intent(this, GameActivity::class.java)
+
+        val shared = getSharedPreferences("settings", MODE_PRIVATE)
+        val editor = shared.edit()
+        val roomID = shared.getString("roomID", "").toString()
+        val host = shared.getString("host", "").toString()
+        val guest = shared.getString("guest", "").toString()
 
         var isReady = false
         val messageList = mutableListOf<Message>()
@@ -53,19 +56,12 @@ class ChatActivity : AppCompatActivity() {
         chatListRV.layoutManager = LinearLayoutManager(this)
         chatListRV.setHasFixedSize(true)
 
-        val adapter = ChatAdapter()
+        val adapter = ChatAdapter(host)
         chatListRV.adapter = adapter
 
         // Test the UI
         messageList.apply {
-            add(Message(sender = "You", body = "Hello"))
-            add(Message(sender = "You", body = "This"))
-            add(Message(sender = "You", body = "is"))
-            add(Message(sender = "You", body = "Test message from you"))
-            add(Message(sender = "User0101", body = "And"))
-            add(Message(sender = "User0101", body = "This"))
-            add(Message(sender = "User0101", body = "is"))
-            add(Message(sender = "User0101", body = "Test message from your opponent"))
+            add(Message(sender = host, body = "Your roomID is: $roomID", timeStamp = Date.from(Instant.now())))
             adapter.messageList = messageList
             adapter.notifyDataSetChanged()
         }
@@ -74,13 +70,28 @@ class ChatActivity : AppCompatActivity() {
 
         readyBtn.setOnClickListener {
             isReady = !isReady
+
             if (isReady) {
                 readyBtn.text = "Unready"
                 readyBtn.setBackgroundColor(ready)
+                mSocket.emit("ready", Ack { args ->
+                    Log.d("Status", "${((args.get(0) as JSONObject))}")
+                })
+                mSocket.emit("getChatHistory", Ack { args ->
+                    Log.d("ChatHistory", "${((args.get(0) as JSONObject))}")
+                })
+                mSocket.on("roomReadied",
+                    Emitter.Listener { startGame(intentGame) })
 
             } else {
                 readyBtn.text = "Ready"
                 readyBtn.setBackgroundColor(unready)
+                mSocket.emit("unready", Ack { args ->
+                    Log.d("Status", "${((args.get(0) as JSONObject))}")
+                })
+                mSocket.emit("getChatHistory", Ack { args ->
+                    Log.d("ChatHistory", "${((args.get(0) as JSONObject))}")
+                })
             }
 
         }
@@ -89,12 +100,17 @@ class ChatActivity : AppCompatActivity() {
             val message = chatEntry.text.toString()
             if (!TextUtils.isEmpty(message)) {
                 messageList.apply {
-                    add(Message(sender = "You", body = message))}
-                // mSocket.emit("sendChat", message, roomID)
+                    add(Message(sender = "You", body = message, timeStamp = Date.from(Instant.now())))}
+
+
+                mSocket.emit("sendChat", message, Ack { args ->
+                    Log.d("SENDCHAT: ", "${((args[0] as JSONObject))}")
+                })
+
                 chatListRV.scrollToPosition(adapter.itemCount - 1)
                 chatEntry.setText("")
-                mSocket.emit("echoTest", "from Android!", Ack { args ->
-                    Log.d("ChatActivity", "Ack $args")
+                mSocket.emit("getChatHistory", Ack { args ->
+                    Log.d("ChatHistory", "${((args.get(0) as JSONObject))}")
                 })
             }
             hideSoftKeyboard()
@@ -106,6 +122,11 @@ class ChatActivity : AppCompatActivity() {
     fun Activity.hideSoftKeyboard() {
         val inputMethodManager = ContextCompat.getSystemService(this, InputMethodManager::class.java)!!
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+    }
+
+    fun startGame(intent: Intent) {
+        startActivity(intent)
+        finish()
     }
 
 }

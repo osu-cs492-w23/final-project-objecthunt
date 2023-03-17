@@ -4,6 +4,6 @@ import java.util.Date
 
 data class Message(
     val sender: String,
-    val body: String
-    //val timeStamp: Date
+    val body: String,
+    val timeStamp: Date
 ) : Serializable

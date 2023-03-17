@@ -33,6 +33,11 @@
             android:name=".activities.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden"/>
+
+        <activity
+            android:name=".activities.GameActivity"
+            android:exported="false" />
+
         <activity
             android:name=".activities.CameraActivity"
             android:exported="false" />
