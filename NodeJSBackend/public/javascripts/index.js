@@ -9,6 +9,8 @@ let elements = {}
 
 let timeLeft = 0
 
+let sampleMaps = []
+
 window.onload = () => {
     elements = {
         "createRoomDiv": document.getElementById("createRoomDiv"),
@@ -21,6 +23,9 @@ window.onload = () => {
         "timeLimitMinutesInput": document.getElementById("timeLimitMinutesInput"),
         "timeLimitSecondsInput": document.getElementById("timeLimitSecondsInput"),
         "nicknameInput": document.getElementById("nicknameInput"),
+        "presetMaps": document.getElementById("presetMaps"),
+        "chooseMapInput": document.getElementById("chooseMapInput"),
+        "submitMapChoice": document.getElementById("submitMapChoice"),
 
         "chatRoomDiv": document.getElementById("chatRoomDiv"),
         "roomCode": document.getElementById("roomCode"),
@@ -38,11 +43,24 @@ window.onload = () => {
         "submitImage": document.getElementById("submitImage"),
         "imageInput": document.getElementById("imageInput"),
         "gameCurrentItem": document.getElementById("gameCurrentItem"),
+        "latitudeInput": document.getElementById("latitudeInput"),
+        "longtitudeInput": document.getElementById("longtitudeInput"),
 
         "gameResultDiv": document.getElementById("gameResultDiv"),
         "winnerText": document.getElementById("winnerText"),
         "submittedPictures": document.getElementById("submittedPictures")
     }
+    socket.emit("getMaps", (data) => {
+        if(data["status"] === "ok") {
+            sampleMaps = data["maps"]
+            console.log("got sample maps:", data["maps"])
+            console.log(data["maps"].map(map=> {
+                return JSON.stringify(map)
+            }).join(""))
+            elements.presetMaps.textContent = data["maps"].map(map=> JSON.stringify(map)).join("")
+        }
+    })
+
 
     elements.itemListRemoveInput.min = 0
     elements.timeLimitMinutesInput.min = 0
@@ -57,12 +75,14 @@ window.onload = () => {
     elements.gameResultDiv.style.display = "none"
 }
 
+
+
 function prepChatPage() {
     elements.createRoomDiv.style.display = "none"
     elements.chatRoomDiv.style.display = "block"
     elements.roomCode.textContent = "Room code: " + roomID
     elements.roomUserNickname.textContent = "Nickname: " + currentRoom["players"][socket.id]["nickname"]
-    elements.roomObjectList.textContent = "Possible objects: " + currentRoom["items"]
+    elements.roomObjectList.textContent = "Possible objects: " + currentRoom["items"].map(item=>item["name"])
     elements.roomTimeLimit.textContent = "Time limit (seconds): " + currentRoom["timeLimit"]
     socketUpdateChat()
 }
@@ -106,9 +126,11 @@ function socketCreateRoom() {
         console.log("Username is empty")
         return
     }
+    const timeMinuteString = parseInt(elements.timeLimitMinutesInput.value ? elements.timeLimitMinutesInput.value : "0")
+    const timeSecondString = parseInt(elements.timeLimitSecondsInput.value ? elements.timeLimitSecondsInput.value : "0")
     socket.emit("createRoom", {
         "itemsList": itemsList,
-        "timeLimit": parseInt(elements.timeLimitMinutesInput.value ? elements.timeLimitMinutesInput.value : "0") * 60 + parseInt(elements.timeLimitSecondsInput.value),
+        "timeLimit": timeMinuteString * 60 + timeSecondString,
         "nickname": elements.nicknameInput.value
     }, (response) => {
         if (response["status"] === "ok") {
@@ -143,7 +165,7 @@ function addSearchItem() {
     if (elements.itemListInput.value.length > 0) {
         itemsList.push(elements.itemListInput.value)
         elements.searchItemList.innerHTML = itemsList.map((item, index) => {
-            return "<p>" + index + ". " + item + "</p>"
+            return "<p>" + index + ". " + item["name"] + " at (" + item["latitude"] + "," + item["longtitude"] + ")</p>"
         }).join("")
         elements.itemListInput.value = ""
     }
@@ -153,10 +175,27 @@ function addSearchItem() {
 function removeSearchItem() {
     itemsList.splice(elements.itemListRemoveInput.value, 1)
     elements.searchItemList.innerHTML = itemsList.map((item, index) => {
-        return "<p>" + index + ". " + item + "</p>"
+        return "<p>" + index + ". " + item["name"] + " at (" + item["latitude"] + "," + item["longtitude"] + ")</p>"
     }).join("")
     elements.itemListRemoveInput.value = ""
     elements.itemListRemoveInput.max = itemsList.length - 1
+}
+
+function chooseMap(){
+    let mapFound = false
+    sampleMaps.forEach(map => {
+        if(map["name"] === elements.chooseMapInput.value){
+            itemsList = map["items"]
+            elements.searchItemList.innerHTML = itemsList.map((item, index) => {
+                return "<p>" + index + ". " + item["name"] + " at (" + item["latitude"] + "," + item["longtitude"] + ")</p>"
+            }).join("")
+            elements.itemListRemoveInput.value = ""
+            elements.itemListRemoveInput.max = itemsList.length - 1
+            mapFound = true
+        }
+    })
+    if(!mapFound)
+        console.log("map not found")
 }
 
 function secondToTime(sec){
@@ -218,17 +257,23 @@ function socketUnReady() {
 function socketSubmitPicture() {
     let file = elements.imageInput.files[0]
     console.log(file)
-    socket.emit("submitAnswer", currentItem, file, (response) => {
+    const coordinate = {
+        "latitude": elements.latitudeInput.value,
+        "longtitude": elements.longtitudeInput.value
+    }
+    socket.emit("submitAnswer", currentItem, file, coordinate, (response) => {
         if (response["status"] === "ok") {
             console.log("answer accepted")
             currentItem = response["newItem"]
-            elements.gameCurrentItem.textContent = "Current item: " + currentItem
+            elements.gameCurrentItem.textContent = "Current item: " + currentItem["name"]
             elements.imageInput.value = null
         } else if(response["status"] === "wrong_answer"){
             console.log("wrong answer")
-            elements.gameCurrentItem.textContent = "Current item: " + currentItem + " Wrong answer"
-        }
-        else if (response["status"] === "error") {
+            elements.gameCurrentItem.textContent += " Wrong answer"
+        } else if(response["status"] === "wrong_location"){
+            console.log("wrong location")
+            elements.gameCurrentItem.textContent += " Wrong location"
+        } else if (response["status"] === "error") {
             console.log("submitAnswer error: ", response["errorMessage"])
         }
     })
@@ -260,7 +305,7 @@ socket.on("roomReadied", () => {
 })
 
 socket.on("itemGenerated", (item) => {
-    elements.gameCurrentItem.textContent = "Current item: " + item
+    elements.gameCurrentItem.textContent = "Current item: " + item["name"]
     currentItem = item
     timeLeft = currentRoom["timeLimit"]
     setInterval(()=> {

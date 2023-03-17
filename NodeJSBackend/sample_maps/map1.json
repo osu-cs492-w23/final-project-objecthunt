@@ -1,0 +1,30 @@
+{
+  "name": "map1",
+  "items": [
+    {
+      "name": "mouse",
+      "longtitude": -123.281039,
+      "latitude": 44.571431
+    },
+    {
+      "name": "bottle",
+      "longtitude": -123.281039,
+      "latitude": 44.571431
+    },
+    {
+      "name": "pen",
+      "longtitude": -123.281039,
+      "latitude": 44.571431
+    },
+    {
+      "name": "book",
+      "longtitude": -123.281039,
+      "latitude": 44.571431
+    },
+    {
+      "name": "headphones",
+      "longtitude": -123.281039,
+      "latitude": 44.571431
+    }
+  ]
+}

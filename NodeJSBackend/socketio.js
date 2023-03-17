@@ -1,10 +1,19 @@
 const {Server} = require("socket.io");
 
-const {checkImage} = require("./gameLogic");
+const {checkImage} = require("./google_vision");
+
+const mapList = require("./sample_maps/mapList.json")
+const {shuffleArray, distance} = require("./utility");
 
 let io
 const maxPlayerNumberInRoom = 2
 let rooms = {}
+
+let error_radius = 0.5
+
+const maps = mapList.map(mapName => {
+    return require("./sample_maps/" + mapName)
+})
 
 function init(server) {
     console.log("server initializing")
@@ -14,12 +23,22 @@ function init(server) {
         console.log("connection initialized by id: ", socket.id)
 
         socket.on("echoTest", (message, callback) => {
-            console.log(message)
+            callback = checkCallback(callback, socket.id, "echoTest")
+            console.log("echoTest received:", message)
             callback({
                 "message": message
             })
             socket.emit("echoTest2", () => {
-                console.log("returned from Android")
+                console.log("echoTest2 returned")
+            })
+        })
+
+        socket.on("getMaps", (callback) => {
+            callback = checkCallback(callback, socket.id, "getMaps")
+            console.log("getMaps called")
+            callback({
+                "status": "ok",
+                "maps": maps
             })
         })
 
@@ -57,6 +76,7 @@ function init(server) {
                 })
                 return
             }
+            console.log("player", socket.id, "successfully joined room", params.roomID)
             socket.data.roomID = params.roomID
             socket.join(params.roomID)
             rooms[params.roomID]["players"][socket.id] = getNewPlayer(params.nickname, false)
@@ -75,6 +95,7 @@ function init(server) {
         socket.on("getOpponentInfo", (callback) => {
             callback = checkCallback(callback, socket.id, "getOpponentInfo")
             if (!verifyRoomRequest(socket, callback)) return
+            console.log("getOpponentInfo called")
             for (let i in rooms[socket.data.roomID]["players"]) {
                 if (i["id"] !== socket.id) {
                     callback({
@@ -105,6 +126,7 @@ function init(server) {
                 "sender": socket.id
             }
             rooms[socket.data.roomID]["chatHistory"].push(newMessage)
+            console.log("player", socket.id, "sent chat message", message)
             callback({
                 "status": "ok"
             })
@@ -114,6 +136,7 @@ function init(server) {
         socket.on("getChatHistory", (callback) => {
             callback = checkCallback(callback, socket.id, "getChatHistory")
             if (!verifyRoomRequest(socket, callback)) return
+            console.log("getChatHistory called")
             callback({
                 "status": "ok",
                 "chatHistory": rooms[socket.data.roomID]["chatHistory"]
@@ -138,6 +161,7 @@ function init(server) {
                 if (!rooms[socket.data.roomID]["players"][player]["ready"])
                     return
             }
+            console.log("player", socket.id, "readied")
             io.to(socket.data.roomID).emit("roomReadied")
             startGame(rooms[socket.data.roomID])
         })
@@ -151,21 +175,30 @@ function init(server) {
                 "timeStamp": Date.now(),
                 "sender": "System"
             })
+            console.log("player", socket.id, "unreadied")
             io.to(socket.data.roomID).emit("unreadied", socket.id)
             callback({
                 "status": "ok"
             })
         })
 
-        socket.on("submitAnswer", (item, file, callback) => {
+        socket.on("submitAnswer", (item, file, coordinate, callback) => {
             callback = checkCallback(callback, socket.id, "submitAnswer")
             if (!verifyRoomRequest(socket, callback)) return
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
+            let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
+            const locationMatchCondition = distance(coordinate, playersCurrentItem) <= error_radius
+            if(!locationMatchCondition){
+                callback({
+                    "status": "wrong_location"
+                })
+                return
+            }
             checkImage(file).then(detectedTags => {
-                let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
-                if (detectedTags.indexOf(playersCurrentItem) > -1) {
+                const tagMatchCondition = detectedTags.find(tag => playersCurrentItem["name"] === tag) !== undefined
+                if (tagMatchCondition) {
                     currentPlayer["pictures"].push(file)
                     currentPlayer["itemIndex"] += 1
                     let item = currentRoom["items"][currentPlayer["itemIndex"]]
@@ -231,24 +264,6 @@ async function startGame(room) {
     )
 }
 
-function shuffleArray(array) {
-    let m = array.length, t, i;
-
-    // While there remain elements to shuffle…
-    while (m) {
-
-        // Pick a remaining element…
-        i = Math.floor(Math.random() * m--);
-
-        // And swap it with the current element.
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-    }
-
-    return array;
-}
-
 function checkCallback(callback, socketID, functionName) {
     if (typeof callback !== 'function') {
         console.log(socketID + " triggered " + functionName + " without providing a callback")
@@ -297,7 +312,12 @@ function getNewRoom(roomID, params) {
         "players": {
             [roomID]: getNewPlayer(params.nickname)
         },
-        "items": params.itemsList.map(item => item.toLowerCase()),
+        "items": params.itemsList.map(item => {
+            return {
+                ...item,
+                "name": item["name"].toLowerCase()
+            }
+        }),
         "timeLimit": params.timeLimit,
         "chatHistory": [{
             "body": params.nickname + " joined.",
