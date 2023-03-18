@@ -40,9 +40,16 @@ class JoinActivity : AppCompatActivity() {
                 mSocket.emit("joinRoom", JSONObject("{'roomID': ${roomID}, 'nickname': ${nickname}}"), Ack { args ->
                     if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
                         editor.putString("guest", nickname)
-                        editor.apply()
+
+                        mSocket.emit("getChatHistory", Ack { args ->
+                            editor.putString("chatHistory", "${((args.get(0) as JSONObject).get("chatHistory"))}")
+                            editor.commit()
+                        })
+
+                        editor.commit()
                         startActivity(intentChat)
                         finish()
+
                     }
                     else {
                         Log.d("Join Activity", "Unable to join a room")

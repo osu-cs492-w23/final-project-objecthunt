@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //val intentCreate = Intent(this, ChatActivity::class.java)
         val intentCreate = Intent(this, CreateActivity::class.java)
         val intentJoin = Intent(this, JoinActivity::class.java)
         val intentCamera = Intent(this, CameraActivity::class.java)
