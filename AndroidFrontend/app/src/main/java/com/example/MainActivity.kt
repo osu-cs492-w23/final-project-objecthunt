@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         val joinBtn: Button = findViewById(R.id.buttonJoin)
         val cameraBtn: Button = findViewById(R.id.buttonCamera)
 
-
         createBtn.setOnClickListener {
             startActivity(intentCreate)
         }
