@@ -188,8 +188,8 @@ function init(server) {
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
-            let playersCurrentItem = currentRoom["items"][currentPlayer["itemIndex"]]
-            const locationMatchCondition = distance(coordinate, playersCurrentItem) <= error_radius
+            let currentItem = currentRoom["items"][currentRoom["itemIndex"]]
+            const locationMatchCondition = distance(coordinate, currentItem) <= error_radius
             if(!locationMatchCondition){
                 callback({
                     "status": "wrong_location"
@@ -197,14 +197,14 @@ function init(server) {
                 return
             }
             checkImage(file).then(detectedTags => {
-                const tagMatchCondition = detectedTags.find(tag => playersCurrentItem["name"] === tag) !== undefined
+                const tagMatchCondition = detectedTags.find(tag => currentItem["name"] === tag) !== undefined
                 if (tagMatchCondition) {
                     currentPlayer["pictures"].push(file)
-                    currentPlayer["itemIndex"] += 1
-                    let item = currentRoom["items"][currentPlayer["itemIndex"]]
+                    currentPlayer["score"] += 1
+                    currentRoom["itemIndex"] += 1
+                    let item = currentRoom["items"][currentRoom["itemIndex"]]
                     callback({
-                        "status": "ok",
-                        "newItem": item
+                        "status": "ok"
                     })
                     if (item === undefined) {
                         console.log("player", socket.id, "won!")
@@ -216,7 +216,8 @@ function init(server) {
                         })
                         return
                     }
-                    console.log("player ", socket.id, "'s answer was correct! Their new item is ", item)
+                    io.to(socket.data.roomID).emit("newItem", item, currentRoom)
+                    console.log("player ", socket.id, "'s answer was correct! The new item is ", item)
                 }
                 callback({
                     "status": "wrong_answer"
@@ -240,7 +241,7 @@ async function startGame(room) {
     setTimeout(
         ()=>{
             sockets.forEach(socket => {
-                let item = room["items"][room["players"][socket.id]["itemIndex"]]
+                let item = room["items"][room["itemIndex"]]
                 socket.emit("itemGenerated", item)
             })
         }
@@ -249,9 +250,9 @@ async function startGame(room) {
         if(room["gameEnded"])
             return
         const winner = Object.entries(room["players"]).reduce(([id1, player1], [id2, player2])=>{
-            if(player1["itemIndex"] > player2["itemIndex"])
+            if(player1["score"] > player2["score"])
                 return id1
-            if(player1["itemIndex"] < player2["itemIndex"])
+            if(player1["score"] < player2["score"])
                 return id2
             return "draw"
         }
@@ -301,7 +302,7 @@ function getNewPlayer(nickname, ready = false) {
     return {
         "nickname": nickname,
         "ready": ready,
-        "itemIndex": 0,
+        "score": 0,
         "pictures": []
     }
 }
@@ -324,6 +325,7 @@ function getNewRoom(roomID, params) {
             "timeStamp": Date.now(),
             "sender": "System"
         }],
+        "itemIndex": 0,
         "inGame": false,
         "gameEnded": false
     }
