@@ -264,9 +264,6 @@ function socketSubmitPicture() {
     socket.emit("submitAnswer", currentItem, file, coordinate, (response) => {
         if (response["status"] === "ok") {
             console.log("answer accepted")
-            currentItem = response["newItem"]
-            elements.gameCurrentItem.textContent = "Current item: " + currentItem["name"]
-            elements.imageInput.value = null
         } else if(response["status"] === "wrong_answer"){
             console.log("wrong answer")
             elements.gameCurrentItem.textContent += " Wrong answer"
@@ -312,6 +309,11 @@ socket.on("itemGenerated", (item) => {
         timeLeft--
         elements.timeLeft.textContent = "Time left: " + secondToTime(timeLeft)
     }, 1000)
+})
+
+socket.on("newItem", (item) => {
+    elements.gameCurrentItem.textContent = "Current item: " + item["name"]
+    elements.imageInput.value = null
 })
 
 socket.on("gameEnded", (data) => {
