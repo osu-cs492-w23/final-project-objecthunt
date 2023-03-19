@@ -1,4 +1,4 @@
-package com.example.chatting.activities
+package com.example.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,7 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.googlelenstest.ImageLabelAnalyzer
+import com.example.ui.ImageLabelAnalyzer
 import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -66,7 +66,8 @@ class CameraActivity : AppCompatActivity() {
             tvPredictionConfidence.text = "$prediction%"
         }
         viewFinder = findViewById(com.example.chatting.R.id.pvv_main_preview)
-        val cameraCaptureButton = findViewById<Button>(com.example.chatting.R.id.btn_main_picture_taking)
+        val cameraCaptureButton =
+            findViewById<Button>(com.example.chatting.R.id.btn_main_picture_taking)
         try {
             mSocket = IO.socket("http://192.168.8.162:3000", opts)
         } catch (e: URISyntaxException) {
@@ -77,13 +78,13 @@ class CameraActivity : AppCompatActivity() {
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.connect()
 
-         // camera permissions
+        // camera permissions
         if (allPermissionsGranted()) {
-          startCamera()
+            startCamera()
         } else {
             ActivityCompat.requestPermissions(
-               this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-           )
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
 
         // Set up the listener for take photo button
@@ -109,7 +110,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     //start image labeling (running constantly)
-    private fun startImageLabeling(){
+    private fun startImageLabeling() {
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(this),
             imageAnalyzer
@@ -166,7 +167,8 @@ class CameraActivity : AppCompatActivity() {
 
                 // Bind use cases to camera image analysis
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalysis)
+                    this, cameraSelector, preview, imageAnalysis
+                )
 
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -254,48 +256,48 @@ class CameraActivity : AppCompatActivity() {
  * Make JUL work on Android.
 
 class AndroidLoggingHandler : Handler() {
-    override fun close() {}
-    override fun flush() {}
-    override fun publish(record: LogRecord) {
-        if (!super.isLoggable(record)) return
-        val name = record.loggerName
-        val maxLength = 30
-        val tag = if (name.length > maxLength) name.substring(name.length - maxLength) else name
-        try {
-            val level = getAndroidLevel(record.level)
-            Log.println(level, tag, record.message)
-            if (record.thrown != null) {
-                Log.println(level, tag, Log.getStackTraceString(record.thrown))
-            }
-        } catch (e: RuntimeException) {
-            Log.e("AndroidLoggingHandler", "Error logging message.", e)
-        }
-    }
+override fun close() {}
+override fun flush() {}
+override fun publish(record: LogRecord) {
+if (!super.isLoggable(record)) return
+val name = record.loggerName
+val maxLength = 30
+val tag = if (name.length > maxLength) name.substring(name.length - maxLength) else name
+try {
+val level = getAndroidLevel(record.level)
+Log.println(level, tag, record.message)
+if (record.thrown != null) {
+Log.println(level, tag, Log.getStackTraceString(record.thrown))
+}
+} catch (e: RuntimeException) {
+Log.e("AndroidLoggingHandler", "Error logging message.", e)
+}
+}
 
-    companion object {
-        fun reset(rootHandler: Handler?) {
-            val rootLogger = LogManager.getLogManager().getLogger("")
-            val handlers = rootLogger.handlers
-            for (handler in handlers) {
-                rootLogger.removeHandler(handler)
-            }
-            if (rootHandler != null) {
-                rootLogger.addHandler(rootHandler)
-            }
-        }
+companion object {
+fun reset(rootHandler: Handler?) {
+val rootLogger = LogManager.getLogManager().getLogger("")
+val handlers = rootLogger.handlers
+for (handler in handlers) {
+rootLogger.removeHandler(handler)
+}
+if (rootHandler != null) {
+rootLogger.addHandler(rootHandler)
+}
+}
 
-        fun getAndroidLevel(level: Level): Int {
-            val value = level.intValue()
-            return if (value >= Level.SEVERE.intValue()) {
-                Log.ERROR
-            } else if (value >= Level.WARNING.intValue()) {
-                Log.WARN
-            } else if (value >= Level.INFO.intValue()) {
-                Log.INFO
-            } else {
-                Log.DEBUG
-            }
-        }
-    }
+fun getAndroidLevel(level: Level): Int {
+val value = level.intValue()
+return if (value >= Level.SEVERE.intValue()) {
+Log.ERROR
+} else if (value >= Level.WARNING.intValue()) {
+Log.WARN
+} else if (value >= Level.INFO.intValue()) {
+Log.INFO
+} else {
+Log.DEBUG
+}
+}
+}
 }
  */

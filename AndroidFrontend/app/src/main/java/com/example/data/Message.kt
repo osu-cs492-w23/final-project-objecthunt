@@ -1,9 +1,10 @@
-package com.example.chatting.data
+package com.example.data
+
 import java.io.Serializable
-import java.util.Date
+import java.util.*
 
 data class Message(
     val sender: String,
-    val body: String
-    //val timeStamp: Date
+    val body: String,
+    val timeStamp: Date
 ) : Serializable
