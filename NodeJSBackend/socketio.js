@@ -207,11 +207,19 @@ function init(server) {
                         "status": "ok"
                     })
                     if (item === undefined) {
-                        console.log("player", socket.id, "won!")
                         currentPlayer["score"]++
                         currentRoom["gameEnded"] = true
+                        let winner = Object.keys(currentRoom["players"]).reduce((winnerID, currentID) => {
+                            let currentScore = currentRoom["players"][currentID]["score"]
+                            let winnerScore = currentRoom["players"][winnerID]["score"]
+                            if(currentScore > winnerScore){
+                                return currentID
+                            }
+                            return winnerID
+                        })
+                        console.log("player", winner, "won!")
                         io.to(socket.data.roomID).emit("gameEnded", {
-                            "winner": socket.id,
+                            "winner": winner,
                             "room": currentRoom
                         })
                         return
