@@ -27,13 +27,15 @@
         <EditText
             android:id="@+id/guestusername"
             android:layout_width="250dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="User"/>
 
         <EditText
             android:id="@+id/roomID"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp" />
+            android:layout_marginTop="80dp"
+            android:text="RoomID"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonJoin2"
