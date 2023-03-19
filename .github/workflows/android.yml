@@ -19,8 +19,9 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: gradle
-
     - name: Grant execute permission for gradlew
-      run: chmod +x ./AndroidFrontend/gradlew
+      working-directory: ./AndroidFrontend
+      run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./AndroidFrontend/gradlew build
+      working-directory: ./AndroidFrontend
+      run: ./gradlew build
