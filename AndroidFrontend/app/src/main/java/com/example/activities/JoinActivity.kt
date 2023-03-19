@@ -1,4 +1,4 @@
-package com.example.chatting.activities
+package com.example.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
-import com.example.chatting.SocketHandler
+import com.example.SocketHandler
 import io.socket.client.Ack
 import org.json.JSONObject
 
@@ -37,24 +37,29 @@ class JoinActivity : AppCompatActivity() {
 
             // Check if both values are empty or not
             if (!TextUtils.isEmpty(nickname)) {
-                mSocket.emit("joinRoom", JSONObject("{'roomID': ${roomID}, 'nickname': ${nickname}}"), Ack { args ->
-                    if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
-                        editor.putString("guest", nickname)
+                mSocket.emit(
+                    "joinRoom",
+                    JSONObject("{'roomID': ${roomID}, 'nickname': ${nickname}}"),
+                    Ack { args ->
+                        if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
+                            editor.putString("guest", nickname)
 
-                        mSocket.emit("getChatHistory", Ack { args ->
-                            editor.putString("chatHistory", "${((args.get(0) as JSONObject).get("chatHistory"))}")
+                            mSocket.emit("getChatHistory", Ack { args ->
+                                editor.putString(
+                                    "chatHistory",
+                                    "${((args.get(0) as JSONObject).get("chatHistory"))}"
+                                )
+                                editor.commit()
+                            })
+
                             editor.commit()
-                        })
+                            startActivity(intentChat)
+                            finish()
 
-                        editor.commit()
-                        startActivity(intentChat)
-                        finish()
-
-                    }
-                    else {
-                        Log.d("Join Activity", "Unable to join a room")
-                    }
-                })
+                        } else {
+                            Log.d("Join Activity", "Unable to join a room")
+                        }
+                    })
 
                 // Need to block the back button or
                 // warn the user that if they press the back button, it will go to the main

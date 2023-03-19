@@ -1,4 +1,5 @@
-package com.example.chatting
+package com.example
+
 import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -10,7 +11,7 @@ object SocketHandler {
     @Synchronized
     fun setSocket() {
         try {
-            mSocket = IO.socket("http://10.0.2.2:8255")
+            mSocket = IO.socket("http://10.0.2.2:7617")
         } catch (e: URISyntaxException) {
             Log.d("SocketHandler", "setSocket() throw the error")
         }

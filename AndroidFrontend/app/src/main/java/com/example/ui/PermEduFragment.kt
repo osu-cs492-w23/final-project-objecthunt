@@ -1,4 +1,4 @@
-package com.example.chatting.ui
+package com.example.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.fragment.app.DialogFragment
 
 
-class PermEduFragment: DialogFragment() {
+class PermEduFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

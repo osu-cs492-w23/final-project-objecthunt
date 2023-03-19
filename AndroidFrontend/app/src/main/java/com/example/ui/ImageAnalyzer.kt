@@ -1,4 +1,4 @@
-package com.example.googlelenstest
+package com.example.ui
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -8,11 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
-import kotlin.math.roundToInt
+
 //Documentation for the Google ML KIT API
 //https://developers.google.com/ml-kit/vision/image-labeling
 //https://developers.google.com/ml-kit/vision/image-labeling/android
-class ImageLabelAnalyzer: ImageAnalysis.Analyzer {
+class ImageLabelAnalyzer : ImageAnalysis.Analyzer {
 
     private val labeler = ImageLabeling.getClient(
         ImageLabelerOptions.Builder()
@@ -32,9 +32,12 @@ class ImageLabelAnalyzer: ImageAnalysis.Analyzer {
                 .addOnSuccessListener { labels ->
                     // SUCCESS check all the labels
                     for (label in labels) {
-                        Log.d("IMAGE RESULT:", """ Format = ${label.text} Value = ${label.confidence} """.trimIndent())
-                        imageResult.value=label.text
-                        imagePrediction.value= "%.2f".format(label.confidence * 100)
+                        Log.d(
+                            "IMAGE RESULT:",
+                            """ Format = ${label.text} Value = ${label.confidence} """.trimIndent()
+                        )
+                        imageResult.value = label.text
+                        imagePrediction.value = "%.2f".format(label.confidence * 100)
                     }
                 }
                 .addOnFailureListener { e ->
@@ -44,6 +47,6 @@ class ImageLabelAnalyzer: ImageAnalysis.Analyzer {
                     imageProxy.close()
                 }
         } ?: imageProxy.close()
-    // close if none labels found
+        // close if none labels found
     }
 }

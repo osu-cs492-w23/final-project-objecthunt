@@ -1,12 +1,13 @@
-package com.example.chatting
+package com.example
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import com.example.chatting.activities.CameraActivity
-import com.example.chatting.activities.CreateActivity
-import com.example.chatting.activities.JoinActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.example.chatting.R
+import com.example.activities.CameraActivity
+import com.example.activities.CreateActivity
+import com.example.activities.JoinActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

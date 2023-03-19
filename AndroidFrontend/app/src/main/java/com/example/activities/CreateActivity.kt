@@ -1,4 +1,4 @@
-package com.example.chatting.activities
+package com.example.activities
 
 import android.content.Intent
 import android.os.Build
@@ -10,12 +10,11 @@ import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
-import com.example.chatting.SocketHandler
+import com.example.SocketHandler
 import io.socket.client.Ack
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.time.Instant
 import java.util.*
 
 
@@ -81,34 +80,50 @@ class CreateActivity : AppCompatActivity() {
             // Check if both values are empty or not
             if (!TextUtils.isEmpty(nickname) && timelimit > 0) {
                 mSocket.emit("echoTest", "CONNECTED")
-                mSocket.emit("createRoom", JSONObject("{'nickname': ${nickname}, 'itemsList': ${jsonArray}, 'timeLimit': ${timelimit}}"), Ack { args ->
-                    Log.d("CreateActivity", "Ack ${((args.get(0) as JSONObject).get("room") as JSONObject)}")
-                    if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
-                        editor.putString("roomID", "${((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}")
-                        editor.putString("host", nickname)
-                        editor.putInt("timelimit", timelimit)
+                mSocket.emit(
+                    "createRoom",
+                    JSONObject("{'nickname': ${nickname}, 'itemsList': ${jsonArray}, 'timeLimit': ${timelimit}}"),
+                    Ack { args ->
+                        Log.d(
+                            "CreateActivity",
+                            "Ack ${((args.get(0) as JSONObject).get("room") as JSONObject)}"
+                        )
+                        if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
+                            editor.putString(
+                                "roomID",
+                                "${((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}"
+                            )
+                            editor.putString("host", nickname)
+                            editor.putInt("timelimit", timelimit)
 
 
-                        mSocket.emit("sendChat","Your room ID is: ${((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}", Ack { args ->
-                            Log.d("SENDCHAT: ", "${((args[0] as JSONObject))}")
-                        })
+                            mSocket.emit(
+                                "sendChat",
+                                "Your room ID is: ${
+                                    ((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")
+                                }",
+                                Ack { args ->
+                                    Log.d("SENDCHAT: ", "${((args[0] as JSONObject))}")
+                                })
 
-                        mSocket.emit("getChatHistory", Ack { args ->
-                            editor.putString("chatHistory", "${((args.get(0) as JSONObject).get("chatHistory"))}")
-                            editor.commit()
+                            mSocket.emit("getChatHistory", Ack { args ->
+                                editor.putString(
+                                    "chatHistory",
+                                    "${((args.get(0) as JSONObject).get("chatHistory"))}"
+                                )
+                                editor.commit()
 //                          Log.d("CHAT HISTORY UPDATED: ",  sharedPreference.getString("chatHistory", "").toString())
-                        })
+                            })
 
-                        editor.commit()
-                        startActivity(intentChat)
+                            editor.commit()
+                            startActivity(intentChat)
 
-                        // Make the user go to the main screen
-                        finish()
-                    }
-                    else {
-                        Log.d("Create Activity", "Unable to create a room")
-                    }
-                })
+                            // Make the user go to the main screen
+                            finish()
+                        } else {
+                            Log.d("Create Activity", "Unable to create a room")
+                        }
+                    })
 
                 // Need to block the back button or
                 // warn the user that if they press the back button, it will go to the main
@@ -122,7 +137,7 @@ class CreateActivity : AppCompatActivity() {
         try {
             result = min.toInt() * 60 + sec.toInt()
 
-        } catch (e: NumberFormatException ) {
+        } catch (e: NumberFormatException) {
             Log.d("Calcuation: ", "Invalid inputs")
             return -1
         }

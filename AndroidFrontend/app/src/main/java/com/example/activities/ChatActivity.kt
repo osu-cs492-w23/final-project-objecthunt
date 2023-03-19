@@ -1,8 +1,7 @@
-package com.example.chatting.activities
+package com.example.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -18,10 +18,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatting.R
-import com.example.chatting.SocketHandler
-import com.example.chatting.data.Message
-import com.example.chatting.ui.ChatAdapter
-import com.example.chatting.ui.ChatViewModel
+import com.example.SocketHandler
+import com.example.data.Message
+import com.example.ui.ChatAdapter
+import com.example.ui.ChatViewModel
 import io.socket.client.Ack
 import io.socket.emitter.Emitter
 import org.json.JSONArray
@@ -31,6 +31,7 @@ import java.util.*
 
 
 class ChatActivity : AppCompatActivity() {
+    private val viewModel: ChatViewModel by viewModels()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +52,13 @@ class ChatActivity : AppCompatActivity() {
         val guest = shared.getString("guest", "").toString()
         val chatHistory = shared.getString("chatHistory", "Error").toString()
 
-        val viewModel : ChatViewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
+        mSocket.on("chatUpdated") {
+                message -> viewModel.newMessageReceived(message[0] as JSONObject)
+        }
 
         Log.d("CHAT Activity: ", chatHistory)
 
         var isReady = false
-        val messageList: MutableList<Message> = getChatList(chatHistory)
 
         val readyBtn = findViewById<Button>(R.id.buttonReady)
         val sendBtn = findViewById<Button>(R.id.send_button)
@@ -68,8 +70,11 @@ class ChatActivity : AppCompatActivity() {
 
         val adapter = ChatAdapter(host)
         chatListRV.adapter = adapter
-        adapter.messageList = messageList
-        adapter.notifyDataSetChanged()
+        viewModel.chats.observe(this){
+            println("updating adapter")
+            adapter.messageList = it.toList()
+            adapter.notifyDataSetChanged()
+        }
 
         readyBtn.setOnClickListener {
             isReady = !isReady
@@ -81,12 +86,22 @@ class ChatActivity : AppCompatActivity() {
                     Log.d("Status", "${((args.get(0) as JSONObject))}")
                 })
                 mSocket.emit("getChatHistory", Ack { args ->
-                    editor.putString("chatHistory", "${((args.get(0) as JSONObject).get("chatHistory"))}")
+                    editor.putString(
+                        "chatHistory",
+                        "${((args.get(0) as JSONObject).get("chatHistory"))}"
+                    )
                     editor.commit()
-                    Log.d("AGAIN", "${getChatList(shared.getString("chatHistory", "Error").toString())}")
+                    Log.d(
+                        "AGAIN",
+                        "${getChatList(shared.getString("chatHistory", "Error").toString())}"
+                    )
                 })
 
-                adapter.updateChatList(getChatList(shared.getString("chatHistory", "Error").toString()))
+                adapter.updateChatList(
+                    getChatList(
+                        shared.getString("chatHistory", "Error").toString()
+                    )
+                )
                 adapter.notifyDataSetChanged()
 
                 mSocket.on("roomReadied",
@@ -99,11 +114,18 @@ class ChatActivity : AppCompatActivity() {
                 })
 
                 mSocket.emit("getChatHistory", Ack { args ->
-                    editor.putString("chatHistory", "${((args.get(0) as JSONObject).get("chatHistory"))}")
+                    editor.putString(
+                        "chatHistory",
+                        "${((args.get(0) as JSONObject).get("chatHistory"))}"
+                    )
                     editor.commit()
                 })
 
-                adapter.updateChatList(getChatList(shared.getString("chatHistory", "Error").toString()))
+                adapter.updateChatList(
+                    getChatList(
+                        shared.getString("chatHistory", "Error").toString()
+                    )
+                )
                 adapter.notifyDataSetChanged()
             }
 
@@ -133,7 +155,8 @@ class ChatActivity : AppCompatActivity() {
 
     // The function for hiding the user's keyboard automatically
     fun Activity.hideSoftKeyboard() {
-        val inputMethodManager = ContextCompat.getSystemService(this, InputMethodManager::class.java)!!
+        val inputMethodManager =
+            ContextCompat.getSystemService(this, InputMethodManager::class.java)!!
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
@@ -150,8 +173,12 @@ class ChatActivity : AppCompatActivity() {
 
         for (i in 0 until chatHistory.length()) {
             val chat = chatHistory.getJSONObject(i)
-            Log.d("HERE","$chat")
-            val message = Message(sender = "${chat.get("sender")}", body = "${chat.get("body")}", timeStamp = Date.from(Instant.now()))
+            Log.d("HERE", "$chat")
+            val message = Message(
+                sender = "${chat.get("sender")}",
+                body = "${chat.get("body")}",
+                timeStamp = Date.from(Instant.now())
+            )
             messageList.apply { add(message) }
         }
         return messageList

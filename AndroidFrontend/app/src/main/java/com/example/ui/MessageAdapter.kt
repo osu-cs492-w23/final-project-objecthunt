@@ -1,14 +1,12 @@
-package com.example.chatting.ui
+package com.example.ui
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatting.R
-import com.example.chatting.data.Message
+import com.example.data.Message
 
 class ChatAdapter(host: String) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
