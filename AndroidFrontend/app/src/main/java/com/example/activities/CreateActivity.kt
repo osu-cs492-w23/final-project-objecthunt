@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
 import com.example.SocketHandler
+import com.example.data.ItemToFind
 import io.socket.client.Ack
 import org.json.JSONArray
 import org.json.JSONException
@@ -19,6 +20,7 @@ import java.util.*
 
 
 class CreateActivity : AppCompatActivity() {
+    private var premadeMaps = mutableListOf<List<ItemToFind>>()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,26 @@ class CreateActivity : AppCompatActivity() {
         SocketHandler.establishConnection()
 
         val mSocket = SocketHandler.getSocket()
+
+        mSocket.emit("getMaps", Ack{args ->
+            val mapList: JSONArray = (args[0] as JSONObject).get("maps") as JSONArray
+            for(i in 0 until mapList.length()){
+                val currentMap = mapList.getJSONObject(i)
+                val itemList = currentMap.get("items") as JSONArray
+                val newMap = mutableListOf<ItemToFind>()
+                for(j in 0 until itemList.length()){
+                    val currentItem = itemList.getJSONObject(i)
+                    newMap.add(ItemToFind(
+                        currentItem.getString("name"),
+                        currentItem.getLong("latitude"),
+                        currentItem.getLong("longtitude")
+                    ))
+                }
+                premadeMaps.add(newMap.toList())
+            }
+
+            println("premade maps processed: $premadeMaps")
+        })
 
         val usernameEntry = findViewById<EditText>(R.id.hostusername)
         val minEntry = findViewById<EditText>(R.id.time_minute)
