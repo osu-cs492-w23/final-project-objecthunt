@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.activities.CameraActivity
 import com.example.activities.CreateActivity
+import com.example.activities.GameActivity
 import com.example.activities.JoinActivity
 import com.example.chatting.R
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         val intentCreate = Intent(this, CreateActivity::class.java)
         val intentJoin = Intent(this, JoinActivity::class.java)
         val intentCamera = Intent(this, CameraActivity::class.java)
+        //val intentGame = Intent(this, GameActivity::class.java)
 
         val sharedPreference = getSharedPreferences("settings", MODE_PRIVATE)
 

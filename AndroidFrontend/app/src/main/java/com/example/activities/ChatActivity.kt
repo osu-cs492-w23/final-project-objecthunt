@@ -154,7 +154,7 @@ class ChatActivity : AppCompatActivity() {
 
     fun startGame(intent: Intent) {
         startActivity(intent)
-        finish()
+        //finish()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
