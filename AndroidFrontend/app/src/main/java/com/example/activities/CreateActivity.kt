@@ -39,37 +39,39 @@ class CreateActivity : AppCompatActivity() {
         val sharedPreference = getSharedPreferences("settings", MODE_PRIVATE)
         val editor = sharedPreference.edit()
 
+
+
         val item1 = JSONObject()
         try {
-            item1.put("name", "mouse")
-            item1.put("longtitude", "-123.281039")
-            item1.put("latitude", "44.571431")
+            item1.put("name", "1")
+            item1.put("longtitude", "1")
+            item1.put("latitude", "1")
         } catch (e: JSONException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
         }
 
-        val item2 = JSONObject()
-        try {
-            item2.put("name", "bottle")
-            item2.put("longtitude", "-123.281039")
-            item2.put("latitude", "44.571431")
-        } catch (e: JSONException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
-        }
-
-
+//        val item2 = JSONObject()
+//        try {
+//            item2.put("name", "bottle")
+//            item2.put("longtitude", "-123.281039")
+//            item2.put("latitude", "44.571431")
+//        } catch (e: JSONException) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace()
+//        }
+//
+//
         val jsonArray = JSONArray()
-
+//
         jsonArray.put(item1)
-        jsonArray.put(item2)
-
-        val test = jsonArray.toString()
-
-        val stringToJA = JSONArray(test)
-
-        Log.d("JSONArray: ", "$stringToJA")
+//        jsonArray.put(item2)
+//
+//        val test = jsonArray.toString()
+//
+//        val stringToJA = JSONArray(test)
+//
+//        Log.d("JSONArray: ", "$stringToJA")
 
         CreateBtn.setOnClickListener {
             val nickname = usernameEntry.text.toString()

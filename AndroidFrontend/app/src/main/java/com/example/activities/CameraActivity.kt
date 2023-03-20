@@ -2,7 +2,9 @@ package com.example.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -14,6 +16,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import com.example.SocketHandler
 import com.example.ui.ImageLabelAnalyzer
 import io.socket.client.Ack
@@ -23,11 +26,16 @@ import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
 import java.io.File
 import java.net.URISyntaxException
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.logging.*
 import java.util.logging.Logger
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 
 
 class CameraActivity : AppCompatActivity() {
@@ -41,6 +49,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var tvPredictionConfidence: TextView
     private lateinit var imageAnalyzer: ImageLabelAnalyzer
 
+    //receive the item from the server
     //Image analyzer build
     private var imageAnalysis = ImageAnalysis.Builder()
         .setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
@@ -49,6 +58,25 @@ class CameraActivity : AppCompatActivity() {
 
     private val opts = IO.Options().apply {
         transports = listOf(WebSocket.NAME).toTypedArray()
+    }
+
+
+    // Initialize targetItem as null
+    private var item: String? = null
+    private lateinit var imageResultObserver: Observer<String?>
+
+    private val onItemReceived = Emitter.Listener { args ->
+        item = args[0] as String
+        Log.d(TAG, "Item received: $item")
+
+        // Start image labeling when the item is received
+        runOnUiThread {
+            // Update the UI or perform an action based on the received item
+            // e.g., update a TextView or start a new process
+
+            // Start image labeling when the item is received
+            startImageLabeling()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -61,6 +89,8 @@ class CameraActivity : AppCompatActivity() {
         tvImageResult = findViewById(com.example.chatting.R.id.tv_img_label)
         tvPredictionConfidence = findViewById(com.example.chatting.R.id.tv_prediction_accuracy)
         imageAnalyzer = ImageLabelAnalyzer()
+        Log.d(TAG, "HELLO IAM HERE")
+
         //Dynamically observe LiveData changes from the ImageAnalyzer
         imageAnalyzer.imageResult.observe(this) { img ->
             tvImageResult.text = img
@@ -81,6 +111,13 @@ class CameraActivity : AppCompatActivity() {
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.connect()
 
+
+        mSocket.on("itemGenerated", onItemReceived)
+        // Add the testing listener
+        mSocket.on("*", Emitter.Listener { args ->
+            Log.d(TAG, "Incoming event: ${args[0]}, data: ${args[1]}")
+        })
+
         // camera permissions
         if (allPermissionsGranted()) {
             startCamera()
@@ -92,20 +129,20 @@ class CameraActivity : AppCompatActivity() {
 
         // Set up the listener for take photo button
         cameraCaptureButton.setOnClickListener {
-
             //when picture capture button is pressed, send an echo test to socket server
             println("emitting")
+
             mSocket.emit("echoTest", "from Android!", Ack { args ->
                 Log.d(TAG, "Ack $args")
             })
+
             if (imageLabelingStarted) {
                 return@setOnClickListener
             }
 
-            //Call Image Analysis Function
-            startImageLabeling()
+            // Call Image Analysis Function
+            // Do not add the "item" event listener here, it's already added in onCreate
             imageLabelingStarted = true
-
         }
 
         //outputDirectory = getOutputDirectory()
@@ -115,12 +152,19 @@ class CameraActivity : AppCompatActivity() {
 
     //start image labeling (running constantly)
     private fun startImageLabeling() {
+        if (imageLabelingStarted) {
+            return
+        }
+
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(this),
             imageAnalyzer
         )
         tvImageResult.text = imageAnalyzer.imageResult.value
         tvPredictionConfidence.text = imageAnalyzer.imagePrediction.value.toString()
+
+        // Update the imageLabelingStarted flag
+        imageLabelingStarted = true
     }
 
     private val onConnect = Emitter.Listener {
@@ -180,25 +224,22 @@ class CameraActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
     }
-/*
-    private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
+
+    private fun takePhotoAndSendToServer() {
+        // Get a stable reference to the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time-stamped output file to hold the image
+        // Create a time-stamped output file to hold the image
         val photoFile = File(
             outputDirectory,
-            SimpleDateFormat(
-                FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg"
+            SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+                .format(System.currentTimeMillis()) + ".jpg"
         )
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
+        // Set up image capture listener, which is triggered after the photo has been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
@@ -212,10 +253,19 @@ class CameraActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                }
-            })
-    } */
 
+                    // Send the photo back to the server
+                    val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                    val byteArray = byteArrayOutputStream.toByteArray()
+                    val encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+                    mSocket.emit("photo", encodedImage)
+                }
+            }
+        )
+    }
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it
