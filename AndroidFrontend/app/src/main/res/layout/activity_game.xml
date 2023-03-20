@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,16 +10,74 @@
     tools:context="com.example.activities.GameActivity">
 
     <TextView
+        android:id="@+id/user_score_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Game!"
+        android:layout_margin="10dp"
+        android:text="You: 0/5"
         android:textColor="@color/primary_text"
-        android:textSize="40dp"
+        android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
+    <TextView
+        android:id="@+id/opponent_score_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Opponent: 0/5"
+        android:textColor="@color/primary_text"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/current_object_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Current Object: ___"
+        android:textColor="@color/primary_text"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/user_score_tv"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <fragment
+        android:id="@+id/map_fragment"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:layout_margin="25dp"
+        map:cameraBearing="112.5"
+        map:cameraTargetLat="-33.796923"
+        map:cameraTargetLng="150.922433"
+        map:cameraTilt="30"
+        map:cameraZoom="13"
+        map:mapType="normal"
+        map:uiCompass="true"
+        map:uiRotateGestures="true"
+        map:uiScrollGestures="true"
+        map:uiTiltGestures="true"
+        map:uiZoomControls="true"
+        map:uiZoomGestures="true"
+        map:layout_constraintTop_toBottomOf="@+id/current_object_tv"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonCameraMainScreen"
+        android:layout_width="288dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:padding="15dp"
+        android:text="Camera"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/map_fragment"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="60dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

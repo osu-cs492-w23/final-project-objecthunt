@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
 import com.example.activities.CameraActivity
 import com.example.activities.CreateActivity
+import com.example.activities.GameActivity
 import com.example.activities.JoinActivity
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         val intentCreate = Intent(this, CreateActivity::class.java)
         val intentJoin = Intent(this, JoinActivity::class.java)
         val intentCamera = Intent(this, CameraActivity::class.java)
+        //val intentGame = Intent(this, GameActivity::class.java)
 
         val createBtn: Button = findViewById(R.id.buttonCreate)
         val joinBtn: Button = findViewById(R.id.buttonJoin)
