@@ -15,7 +15,7 @@ import org.json.JSONObject
 class JoinActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_join)
+        setContentView(R.layout.activity_join_new)
 
         // connect to the node server
         SocketHandler.setSocket()

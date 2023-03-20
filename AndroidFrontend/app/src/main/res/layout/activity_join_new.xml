@@ -36,7 +36,7 @@
         android:id="@+id/subject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create room"
+        android:text="Join room"
         android:textColor="@color/white"
         android:textSize="45dp"
         android:textStyle="bold"
@@ -50,7 +50,7 @@
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create room by your preferences!"
+        android:text="Join your friend's room!"
         android:textColor="@color/white"
         android:textSize="20dp"
         android:textStyle="bold"
@@ -62,10 +62,10 @@
 
 
     <TextView
-        android:id="@+id/subject_hostname"
+        android:id="@+id/subject_guestname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="75dp"
         android:text="Username"
         android:textColor="@color/primary_text"
         android:textSize="30dp"
@@ -75,7 +75,7 @@
         app:layout_constraintTop_toTopOf="@id/view"/>
 
     <EditText
-        android:id="@+id/hostusername"
+        android:id="@+id/guestusername"
         android:text="AnonymousUser"
         android:textColor="@color/new_general_background"
         android:layout_width="300dp"
@@ -85,7 +85,7 @@
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subject_hostname"/>
+        app:layout_constraintTop_toBottomOf="@id/subject_guestname"/>
 
     <View
         android:id="@+id/divider1"
@@ -95,14 +95,14 @@
         android:layout_marginTop="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/hostusername"/>
+        app:layout_constraintTop_toBottomOf="@id/guestusername"/>
 
     <TextView
-        android:id="@+id/subject_timelimit"
+        android:id="@+id/subject_roomID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="Time Limit"
+        android:text="Room ID"
         android:textColor="@color/primary_text"
         android:textSize="30dp"
         android:textStyle="bold"
@@ -111,112 +111,21 @@
         app:layout_constraintTop_toBottomOf="@id/divider1"/>
 
     <EditText
-        android:layout_marginStart="15dp"
-        android:id="@+id/time_minute"
-        android:layout_width="100dp"
+        android:id="@+id/roomID"
+        android:text="RoomID"
+        android:textColor="@color/new_general_background"
+        android:layout_width="300dp"
+        android:layout_marginTop="8dp"
         android:layout_height="wrap_content"
         android:background="@drawable/background_edittext"
-        android:layout_marginTop="8dp"
-        android:text="0"
-        android:textColor="@color/new_general_background"
         android:padding="10dp"
-        app:layout_constraintEnd_toStartOf="@id/mins"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subject_timelimit"/>
-
-    <TextView
-        android:id="@+id/mins"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Mins"
-        android:textColor="@color/primary_text"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:layout_marginStart="-15dp"
-        app:layout_constraintStart_toEndOf="@id/time_minute"
-        app:layout_constraintEnd_toStartOf="@id/time_second"
-        app:layout_constraintTop_toBottomOf="@id/subject_timelimit"/>
-
-    <EditText
-        android:id="@+id/time_second"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="15dp"
-        android:background="@drawable/background_edittext"
-        android:padding="10dp"
-        android:textColor="@color/new_general_background"
-        app:layout_constraintStart_toEndOf="@id/mins"
-        app:layout_constraintEnd_toStartOf="@id/secs"
-        app:layout_constraintTop_toBottomOf="@id/subject_timelimit"/>
-
-    <TextView
-        android:id="@+id/secs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="15dp"
-        android:text="Secs"
-        android:textColor="@color/primary_text"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:layout_marginStart="-15dp"
-        app:layout_constraintStart_toEndOf="@id/time_second"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subject_timelimit"/>
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="300dp"
-        android:layout_height="1dp"
-        android:background="#b6b7be"
-        android:layout_marginTop="75dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subject_timelimit"/>
-
-    <TextView
-        android:id="@+id/subject_itemset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Item Set"
-        android:textColor="@color/primary_text"
-        android:textSize="30dp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider2"/>
-
-    <TextView
-        android:id="@+id/items"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="Item 1 Itme 2 Item 3 Item 4 Item 5"
-        android:textColor="@color/new_general_background"
-        android:textSize="15dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/subject_itemset"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <Spinner
-        android:id="@+id/spinner_maps"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:layout_marginTop="15dp"
-        android:text="Test"
-        app:layout_constraintTop_toBottomOf="@id/items"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/subject_roomID"/>
 
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonCreate"
+        android:id="@+id/buttonJoin2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/background_general_button"
@@ -224,14 +133,14 @@
         android:paddingRight="25dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="Create!"
+        android:text="Join!"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="22dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         app:backgroundTint="@null"
-        app:layout_constraintTop_toBottomOf="@id/spinner_maps"
+        app:layout_constraintTop_toBottomOf="@id/roomID"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

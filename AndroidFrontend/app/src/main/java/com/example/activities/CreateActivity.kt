@@ -22,7 +22,7 @@ class CreateActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create)
+        setContentView(R.layout.activity_create_new)
 
         // connect to the node server
         SocketHandler.setSocket()

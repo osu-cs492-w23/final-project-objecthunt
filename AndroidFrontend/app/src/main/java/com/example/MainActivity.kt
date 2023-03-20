@@ -13,7 +13,7 @@ import com.example.activities.JoinActivity
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_new)
 
         val intentCreate = Intent(this, CreateActivity::class.java)
         val intentJoin = Intent(this, JoinActivity::class.java)
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         val createBtn: Button = findViewById(R.id.buttonCreate)
         val joinBtn: Button = findViewById(R.id.buttonJoin)
-        val cameraBtn: Button = findViewById(R.id.buttonCamera)
+        //val cameraBtn: Button = findViewById(R.id.buttonCamera)
 
         val usernameTV: TextView = findViewById(R.id.username)
 
@@ -36,9 +36,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intentJoin)
         }
 
-        cameraBtn.setOnClickListener {
-            startActivity(intentCamera)
-        }
+//
+
     }
 
     fun getUniqueNumber(length: Int) = (0..9).shuffled().take(length).joinToString("")

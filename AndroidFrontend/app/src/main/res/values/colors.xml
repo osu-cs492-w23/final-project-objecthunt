@@ -16,4 +16,6 @@
     <color name="error">#de2362</color>
     <color name="received_message_background">#0b7288</color>
     <color name="sent_message_background">#0da3A6</color>
+    <color name="fancy_background">#333378</color>
+    <color name="new_general_background">#5f67ea</color>
 </resources>
