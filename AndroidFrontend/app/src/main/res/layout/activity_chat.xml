@@ -8,6 +8,14 @@
     android:background="@color/general_background"
     tools:context="com.example.activities.ChatActivity">
 
+    <TextView
+        android:id="@+id/roomID_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Room ID"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonReady"/>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonReady"
         android:layout_width="match_parent"
@@ -20,7 +28,8 @@
         android:textSize="20dp"
         android:textStyle="bold"
         app:backgroundTint="@color/notready"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/roomID_tv"
+        app:layout_constraintBottom_toTopOf="@id/chatRecyclerView"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"

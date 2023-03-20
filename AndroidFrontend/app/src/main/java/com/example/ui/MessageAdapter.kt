@@ -1,5 +1,6 @@
 package com.example.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,12 +25,21 @@ class ChatAdapter(host: String) : RecyclerView.Adapter<ChatAdapter.ViewHolder>()
      * This part of the code can be changed.**/
     override fun getItemViewType(position: Int): Int {
         // if messageList[position].sender == thisUser
-        return if (messageList[position].sender == host) 1 else 0
+        Log.d("getItemViewType", messageList[position].sender)
+        if (messageList[position].sender == host)
+            return 1
+        else if (messageList[position].sender == "System")
+            return 2
+        else
+            return 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = if (viewType == 1) LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_sent_message, parent, false)
+        else if (viewType == 2)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_container_system_message, parent, false)
         else
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_container_received_message, parent, false)

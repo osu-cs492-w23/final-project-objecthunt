@@ -3,6 +3,7 @@ package com.example
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
 import com.example.activities.CameraActivity
@@ -22,6 +23,10 @@ class MainActivity : AppCompatActivity() {
         val joinBtn: Button = findViewById(R.id.buttonJoin)
         val cameraBtn: Button = findViewById(R.id.buttonCamera)
 
+        val usernameTV: TextView = findViewById(R.id.username)
+
+        usernameTV.text = "User" + getUniqueNumber(4)
+
 
         createBtn.setOnClickListener {
             startActivity(intentCreate)
@@ -35,4 +40,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intentCamera)
         }
     }
+
+    fun getUniqueNumber(length: Int) = (0..9).shuffled().take(length).joinToString("")
 }

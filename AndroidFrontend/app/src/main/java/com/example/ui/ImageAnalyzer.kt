@@ -19,6 +19,7 @@ class ImageLabelAnalyzer : ImageAnalysis.Analyzer {
             .setConfidenceThreshold(0.7F)
             .build()
     )
+
     public val imageResult = MutableLiveData<String>()
     val imagePrediction = MutableLiveData<String>()
 
