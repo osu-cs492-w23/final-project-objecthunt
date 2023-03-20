@@ -14,6 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.SocketHandler
 import com.example.ui.ImageLabelAnalyzer
 import io.socket.client.Ack
 import io.socket.client.IO
@@ -24,6 +25,7 @@ import java.io.File
 import java.net.URISyntaxException
 import java.util.*
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.logging.*
 import java.util.logging.Logger
 
@@ -53,6 +55,7 @@ class CameraActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //AndroidLoggingHandler.reset(AndroidLoggingHandler())
+        cameraExecutor = Executors.newSingleThreadExecutor()
         Logger.getLogger("my.category").level = Level.FINEST
         setContentView(com.example.chatting.R.layout.activity_google_lens)
         tvImageResult = findViewById(com.example.chatting.R.id.tv_img_label)
@@ -69,7 +72,7 @@ class CameraActivity : AppCompatActivity() {
         val cameraCaptureButton =
             findViewById<Button>(com.example.chatting.R.id.btn_main_picture_taking)
         try {
-            mSocket = IO.socket("http://192.168.8.162:3000", opts)
+            mSocket = SocketHandler.getSocket()
         } catch (e: URISyntaxException) {
             throw RuntimeException(e)
         }
@@ -89,6 +92,12 @@ class CameraActivity : AppCompatActivity() {
 
         // Set up the listener for take photo button
         cameraCaptureButton.setOnClickListener {
+
+            //when picture capture button is pressed, send an echo test to socket server
+            println("emitting")
+            mSocket.emit("echoTest", "from Android!", Ack { args ->
+                Log.d(TAG, "Ack $args")
+            })
             if (imageLabelingStarted) {
                 return@setOnClickListener
             }
@@ -97,11 +106,6 @@ class CameraActivity : AppCompatActivity() {
             startImageLabeling()
             imageLabelingStarted = true
 
-            //when picture capture button is pressed, send an echo test to socket server
-            println("emitting")
-            mSocket.emit("echoTest", "from Android!", Ack { args ->
-                Log.d(TAG, "Ack $args")
-            })
         }
 
         //outputDirectory = getOutputDirectory()
