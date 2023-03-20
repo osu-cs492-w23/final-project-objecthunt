@@ -261,7 +261,7 @@ function socketSubmitPicture() {
         "latitude": elements.latitudeInput.value,
         "longtitude": elements.longtitudeInput.value
     }
-    socket.emit("submitAnswer", currentItem, file, coordinate, (response) => {
+    socket.emit("submitAnswer", file, coordinate, (response) => {
         if (response["status"] === "ok") {
             console.log("answer accepted")
         } else if(response["status"] === "wrong_answer"){

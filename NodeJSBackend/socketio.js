@@ -189,7 +189,7 @@ function init(server) {
             })
         })
 
-        socket.on("submitAnswer", (item, file, coordinate, callback) => {
+        socket.on("submitAnswer", (file, coordinate, callback) => {
             callback = checkCallback(callback, socket.id, "submitAnswer")
             if (!verifyRoomRequest(socket, callback)) return
             console.log("player ", socket.id, " submitted an answer...")
