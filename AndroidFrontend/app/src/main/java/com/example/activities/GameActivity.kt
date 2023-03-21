@@ -36,9 +36,25 @@ class GameActivity : AppCompatActivity() {
                 itemParsed.getLong("latitude"),
                 itemParsed.getLong("longtitude")
             )
+            // set Corvallis as a test location
+            val currentObjectLocation = LatLng(currentItem.latitude.toDouble(), currentItem.longtitude.toDouble())
+
+            // get reference to the map object
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
             // Stuff that updates the UI
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem.name}"
+                mapFragment?.getMapAsync { googleMap ->
+                    addMarker(googleMap, currentObjectLocation)
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentObjectLocation))
+//            // set camera starting position bounds to set location
+////            googleMap.setOnMapLoadedCallback {
+////                val bounds = LatLngBounds.builder()
+////                bounds.include(testLocation)
+////                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+////            }
+                }
             }
         }
 
@@ -64,23 +80,6 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        // set Corvallis as a test location
-        val currentObjectLocation = LatLng(currentItem.latitude.toDouble(), currentItem.longtitude.toDouble())
-
-        // get reference to the map object
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
-
-        mapFragment?.getMapAsync { googleMap ->
-            addMarker(googleMap, currentObjectLocation)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentObjectLocation))
-//            // set camera starting position bounds to set location
-////            googleMap.setOnMapLoadedCallback {
-////                val bounds = LatLngBounds.builder()
-////                bounds.include(testLocation)
-////                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
-////            }
-        }
 
         // set a click listener for the camera button
         val cameraBtn: Button = findViewById(R.id.buttonCameraMainScreen)
