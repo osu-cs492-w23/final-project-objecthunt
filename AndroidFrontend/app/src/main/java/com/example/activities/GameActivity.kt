@@ -5,20 +5,21 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chatting.R
 import com.example.SocketHandler
+import com.example.chatting.R
+import com.example.data.ItemToFind
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import org.json.JSONObject
 
 class GameActivity : AppCompatActivity() {
+    lateinit var currentItem: ItemToFind
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
-        val mSocket = SocketHandler.getSocket()
 
         // set Corvallis as a test location
         val testLocation = LatLng(44.571651, -123.277702)
@@ -42,23 +43,43 @@ class GameActivity : AppCompatActivity() {
         val userScoreTV: TextView = findViewById(R.id.user_score_tv)
         val opponentScoreTV: TextView = findViewById(R.id.opponent_score_tv)
 
-        // if (score changes) {
-            // userScoreTV.text = ""
-            // opponentScoreTV.text = ""
-        // }
-
         // update the object text when the next object is up
         val currentObjectTV: TextView = findViewById(R.id.current_object_tv)
-
-//        if (next object in list is up) {
-//            currentObjectTV.text = new object
-//        }
 
         // set a click listener for the camera button
         val cameraBtn: Button = findViewById(R.id.buttonCameraMainScreen)
         val intentCamera = Intent(this, CameraActivity::class.java)
         cameraBtn.setOnClickListener {
             startActivity(intentCamera)
+        }
+
+        val mSocket = SocketHandler.getSocket()
+        mSocket.on("itemGenerated"){params ->
+            println("item generated received: $params")
+            val itemParsed = params[0] as JSONObject
+            currentItem = ItemToFind(
+                itemParsed.getString("name"),
+                itemParsed.getLong("latitude"),
+                itemParsed.getLong("longtitude")
+            )
+            // Stuff that updates the UI
+            runOnUiThread {
+                currentObjectTV.text = "Current Object: ${currentItem.name}"
+            }
+        }
+
+        mSocket.on("newItem"){params ->
+            val nextItem = params[0] as JSONObject
+            val currentRoom = params[0] as JSONObject
+            currentItem = ItemToFind(
+                nextItem.getString("name"),
+                nextItem.getLong("latitude"),
+                nextItem.getLong("longtitude")
+            )
+            // Stuff that updates the UI
+            runOnUiThread {
+                currentObjectTV.text = "Current Object: ${currentItem.name}"
+            }
         }
     }
 
