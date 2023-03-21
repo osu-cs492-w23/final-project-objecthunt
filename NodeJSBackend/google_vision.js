@@ -12,7 +12,8 @@ function fixBase64Encoding(base64Image) {
   async function checkImage(base64Image) {
     // Imports the Google Cloud client library
     const vision = require('@google-cloud/vision');
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = "/mnt/c/Users/Adil/Desktop/googleapi/googlevision.json"
+    //for testing on my machine (windows)
+    //process.env.GOOGLE_APPLICATION_CREDENTIALS = "/mnt/c/Users/Adil/Desktop/googleapi/googlevision.json"
     
     // Creates a client
     const client = new vision.ImageAnnotatorClient();
