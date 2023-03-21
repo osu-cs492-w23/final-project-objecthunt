@@ -33,6 +33,9 @@ class JoinActivity : AppCompatActivity() {
         val sharedPreference = getSharedPreferences("settings", MODE_PRIVATE)
         val editor = sharedPreference.edit()
 
+        val defaultValue = sharedPreference.getString("nickname", "User" + getUniqueNumber(4)).toString()
+        usernameEntry.setText(defaultValue)
+
         joinBtn.setOnClickListener {
             val roomID = roomIDEntry.text.toString()
             val nickname = usernameEntry.text.toString()
@@ -79,4 +82,6 @@ class JoinActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun getUniqueNumber(length: Int) = (0..9).shuffled().take(length).joinToString("")
 }

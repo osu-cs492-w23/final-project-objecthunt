@@ -2,10 +2,12 @@ package com.example.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
@@ -18,12 +20,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.example.SocketHandler
+import com.example.data.ItemToFind
 import com.example.ui.ImageLabelAnalyzer
 import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URISyntaxException
 import java.text.SimpleDateFormat
@@ -32,11 +36,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.logging.*
 import java.util.logging.Logger
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
-import com.example.data.ItemToFind
-import java.io.ByteArrayOutputStream
 
 
 
@@ -54,6 +53,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var imageAnalyzer: ImageLabelAnalyzer
     private lateinit var tvObjectStatus: TextView
     private var currentItemName: String? = null
+
     //receive the item from the server
     //Image analyzer build
     private var imageAnalysis = ImageAnalysis.Builder()
@@ -313,6 +313,7 @@ class CameraActivity : AppCompatActivity() {
             }
         )
     }
+
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it

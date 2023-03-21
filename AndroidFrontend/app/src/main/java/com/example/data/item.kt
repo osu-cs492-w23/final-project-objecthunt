@@ -1,6 +1,5 @@
 package com.example.data
 
-
 import java.io.Serializable
 
 data class ItemToFind(
