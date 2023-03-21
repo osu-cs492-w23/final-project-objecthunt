@@ -148,6 +148,7 @@ class CameraActivity : AppCompatActivity() {
         //outputDirectory = getOutputDirectory()
 
         // cameraExecutor = Executors.newSingleThreadExecutor()
+        //startImageLabeling()
     }
 
     //start image labeling (running constantly)
