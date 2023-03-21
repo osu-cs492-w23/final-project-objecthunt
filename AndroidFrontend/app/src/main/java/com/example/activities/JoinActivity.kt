@@ -64,7 +64,11 @@ class JoinActivity : AppCompatActivity() {
                             editor.putString("nickname", nickname)
                             editor.commit()
                             val snackbar = Snackbar
-                                .make(it, "ERROR: Invalid RoomID. Please check your roomID again.", Snackbar.LENGTH_LONG)
+                                .make(
+                                    it,
+                                    "ERROR: Invalid RoomID. Please check your roomID again.",
+                                    Snackbar.LENGTH_LONG
+                                )
                             snackbar.show()
                         }
                     })

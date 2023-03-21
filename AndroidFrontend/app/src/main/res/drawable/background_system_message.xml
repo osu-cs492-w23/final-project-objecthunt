@@ -3,9 +3,9 @@
     android:shape="rectangle">
     <solid android:color="#c0c3c3" />
     <corners
+        android:bottomLeftRadius="24dp"
         android:bottomRightRadius="24dp"
         android:topLeftRadius="24dp"
-        android:topRightRadius="24dp"
-        android:bottomLeftRadius="24dp"/>
+        android:topRightRadius="24dp" />
 
 </shape>

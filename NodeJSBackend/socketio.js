@@ -85,6 +85,11 @@ function init(server) {
                 "timeStamp": Date.now(),
                 "sender": "System"
             })
+            rooms[params.roomID]["chatHistory"].push({
+                "body": "items: " + rooms[params.roomID]["items"].map((item) => item["name"]).join(","),
+                "timeStamp": Date.now(),
+                "sender": "System"
+            })
             io.to(socket.data.roomID).emit("roomFilled", rooms[params.roomID])
             callback({
                 "status": "ok",

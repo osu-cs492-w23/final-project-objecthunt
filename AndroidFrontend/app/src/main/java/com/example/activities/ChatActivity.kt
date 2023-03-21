@@ -32,6 +32,7 @@ import java.util.*
 
 class ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +53,14 @@ class ChatActivity : AppCompatActivity() {
         val chatHistory = shared.getString("chatHistory", "Error").toString()
 
         Log.d("Chat", "${getChatList(chatHistory)}")
-        for (i in 0 until getChatList(chatHistory).length())
-        {
+        for (i in 0 until getChatList(chatHistory).length()) {
             Log.d("PLEASE", "DANG")
             val chatList = getChatList(chatHistory)
             viewModel.newMessageReceived(chatList.getJSONObject(i))
         }
 
-        mSocket.on("chatUpdated") {
-                message -> viewModel.newMessageReceived(message[0] as JSONObject)
+        mSocket.on("chatUpdated") { message ->
+            viewModel.newMessageReceived(message[0] as JSONObject)
         }
 
         mSocket.on("roomFilled") {
@@ -88,7 +88,7 @@ class ChatActivity : AppCompatActivity() {
         val adapter = ChatAdapter(roomID)
         chatListRV.adapter = adapter
 
-        viewModel.chats.observe(this){
+        viewModel.chats.observe(this) {
             println("updating adapter")
             adapter.messageList = it.toList()
             adapter.notifyDataSetChanged()

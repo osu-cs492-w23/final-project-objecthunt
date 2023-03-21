@@ -10,8 +10,8 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chatting.R
 import com.example.SocketHandler
+import com.example.chatting.R
 import com.example.ui.SpinnerViewModel
 import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Ack
@@ -42,9 +42,9 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         Log.d("Create Activity Length is ", length.toString())
 
-        mSocket.emit("getMaps", Ack{ args ->
+        mSocket.emit("getMaps", Ack { args ->
             val mapList: JSONArray = (args[0] as JSONObject).get("maps") as JSONArray
-            for(i in 0 until mapList.length()){
+            for (i in 0 until mapList.length()) {
                 val currentMap = mapList.getJSONObject(i)
                 val itemList = currentMap.get("items") as JSONArray
                 premadeMaps.add(itemList)
@@ -53,7 +53,7 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
 
             println("premade maps processed: $premadeMaps")
-            Log.d("Create Activity","premade maps processed: $premadeMaps")
+            Log.d("Create Activity", "premade maps processed: $premadeMaps")
             viewModel.updatePremadeMaps(premadeMaps)
         })
 
@@ -98,18 +98,20 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         Log.d("JSONArray: ", "$stringToJA")
 
-        viewModel.premadeMaps.observe(this){
+        viewModel.premadeMaps.observe(this) {
             Log.d("PLZZZZZZ", "updating adapter")
             val spinner = findViewById<Spinner>(R.id.spinner_maps)
             spinner.onItemSelectedListener = this
 
-            val arrayAdapter : ArrayAdapter<*> = ArrayAdapter<String>(
+            val arrayAdapter: ArrayAdapter<*> = ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_spinner_item,
-                mapNames)
+                mapNames
+            )
 
             arrayAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item)
+                android.R.layout.simple_spinner_dropdown_item
+            )
 
             spinner.adapter = arrayAdapter
 
@@ -136,16 +138,21 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         if ("${((createRoomArgs[0] as JSONObject)).get("status")}" == "ok") {
                             editor.putString(
                                 "roomID",
-                                "${((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}"
+                                "${
+                                    ((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get(
+                                        "roomID"
+                                    )
+                                }"
                             )
                             editor.putString("nickname", nickname)
                             editor.putInt("timelimit", timelimit)
 
-
                             mSocket.emit(
                                 "sendChat",
                                 "Your room ID is: ${
-                                    ((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get("roomID")
+                                    ((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get(
+                                        "roomID"
+                                    )
                                 }",
                                 Ack { sendChatArgs ->
                                     Log.d("SENDCHAT: ", "${((sendChatArgs[0] as JSONObject))}")
@@ -175,8 +182,7 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
                 // Need to block the back button or
                 // warn the user that if they press the back button, it will go to the main
-            }
-            else {
+            } else {
                 val snackbar = Snackbar
                     .make(it, "ERROR: Set your time over 0 sec", Snackbar.LENGTH_LONG)
                 snackbar.show()
@@ -184,17 +190,18 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?,
-                                view: View, position: Int,
-                                id: Long) {
+    override fun onItemSelected(
+        parent: AdapterView<*>?,
+        view: View, position: Int,
+        id: Long
+    ) {
         Log.d("Selection is now", "${premadeMaps[position]}}")
         idx = position
         selection = premadeMaps[idx]
 
         var text = ""
 
-        for (i in 0 until selection.length())
-        {
+        for (i in 0 until selection.length()) {
             val currentItem = selection.getJSONObject(i)
             text += currentItem.get("name").toString() + " "
         }

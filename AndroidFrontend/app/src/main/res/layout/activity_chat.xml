@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="#f6f7ff"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#f6f7ff">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonReady"
@@ -27,8 +25,8 @@
         android:layout_height="wrap_content"
         android:text="Your Room ID"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@id/buttonReady"
-        app:layout_constraintBottom_toTopOf="@id/chatRecyclerView"/>
+        app:layout_constraintBottom_toTopOf="@id/chatRecyclerView"
+        app:layout_constraintTop_toBottomOf="@id/buttonReady" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
@@ -47,26 +45,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/new_general_background"
         android:background="@drawable/background_edittext"
         android:hint="Type your message"
         android:padding="15dp"
-        app:layout_constraintTop_toBottomOf="@id/chatRecyclerView"
+        android:textColor="@color/new_general_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/send_button"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatRecyclerView" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/background_general_button"
         android:padding="12dp"
         android:text="Send"
         android:textColor="@color/white"
         android:textSize="20dp"
-        android:layout_marginBottom="5dp"
         android:textStyle="bold"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

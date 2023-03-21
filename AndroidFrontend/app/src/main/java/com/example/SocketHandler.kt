@@ -23,6 +23,14 @@ object SocketHandler {
     }
 
     @Synchronized
+    fun getSocketOrNull(): Socket? {
+        if (!this::mSocket.isInitialized) {
+            return null
+        }
+        return mSocket
+    }
+
+    @Synchronized
     fun establishConnection() {
         mSocket.connect()
     }

@@ -6,4 +6,4 @@ data class ItemToFind(
     val name: String,
     val latitude: Long,
     val longtitude: Long
-): Serializable
+) : Serializable
