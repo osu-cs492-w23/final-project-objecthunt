@@ -21,7 +21,6 @@ class GameActivity : AppCompatActivity() {
     var currentItem: ItemToFind? = null
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -36,7 +35,7 @@ class GameActivity : AppCompatActivity() {
 
         // update the object text when the first object is up
         val mSocket = SocketHandler.getSocket()
-        mSocket.on("itemGenerated"){params ->
+        mSocket.on("itemGenerated") { params ->
             println("item generated received: $params")
             val itemParsed = params[0] as JSONObject
             runOnUiThread {
@@ -51,10 +50,18 @@ class GameActivity : AppCompatActivity() {
             }
             // set Corvallis as a test location
             val currentObjectLocation =
-                currentItem?.longtitude?.let { currentItem?.latitude?.let { it1 -> LatLng(it1.toDouble(), it.toDouble()) } }
+                currentItem?.longtitude?.let {
+                    currentItem?.latitude?.let { it1 ->
+                        LatLng(
+                            it1.toDouble(),
+                            it.toDouble()
+                        )
+                    }
+                }
 
             // get reference to the map object
-            val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
             // Stuff that updates the UI
 
             Log.d("Current ITEM:", "$currentItem")
@@ -81,7 +88,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         // update the object text when the next object is up
-        mSocket.on("newItem"){params ->
+        mSocket.on("newItem") { params ->
             val nextItem = params[0] as JSONObject
             val currentRoom = params[0] as JSONObject
             runOnUiThread {
@@ -100,7 +107,9 @@ class GameActivity : AppCompatActivity() {
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem?.name}"
 
-                val userScore = currentRoom.getJSONArray("players").getJSONObject(mSocket.id().toInt()).getInt("score")
+                val userScore =
+                    currentRoom.getJSONArray("players").getJSONObject(mSocket.id().toInt())
+                        .getInt("score")
                 userScoreTV.text = "${mSocket.id()}: ${userScore}/5"
             }
 
@@ -115,6 +124,7 @@ class GameActivity : AppCompatActivity() {
             onCameraButtonClick()
         }
     }
+
     private fun onCameraButtonClick() {
         if (currentItem != null) {
             val intentCamera = Intent(this, CameraActivity::class.java)
