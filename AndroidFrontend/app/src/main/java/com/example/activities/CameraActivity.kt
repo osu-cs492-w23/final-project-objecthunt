@@ -39,6 +39,9 @@ import com.example.data.ItemToFind
 import java.io.ByteArrayOutputStream
 
 
+
+
+
 class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
@@ -92,6 +95,7 @@ class CameraActivity : AppCompatActivity() {
         tvPredictionConfidence = findViewById(com.example.chatting.R.id.tv_prediction_accuracy)
         imageAnalyzer = ImageLabelAnalyzer()
         tvObjectStatus = findViewById(com.example.chatting.R.id.tv_object_status)
+
         Log.d(TAG, "HELLO IAM HERE")
         val currentItem = intent.getSerializableExtra("currentItem") as ItemToFind
         currentItemName = currentItem?.name
@@ -136,22 +140,20 @@ class CameraActivity : AppCompatActivity() {
         // Set up the listener for take photo button
         cameraCaptureButton.setOnClickListener {
             //when picture capture button is pressed, send an echo test to socket server
-            println("emitting")
+            Log.d("imageLabelingStarted", "$imageLabelingStarted")
 
-            mSocket.emit("echoTest", "from Android!", Ack { args ->
-                Log.d(TAG, "Ack $args")
-            })
 
-            if (imageLabelingStarted) {
-                return@setOnClickListener
-            }
+
+            // Take a photo and send it to the server
+            Log.d("SHOULD SEND TO SERVER?!!??!", "")
+            takePhotoAndSendToServer()
 
             // Call Image Analysis Function
             // Do not add the "item" event listener here, it's already added in onCreate
-            imageLabelingStarted = true
+            //imageLabelingStarted = true
         }
 
-        //outputDirectory = getOutputDirectory()
+        outputDirectory = getOutputDirectory()
 
         // cameraExecutor = Executors.newSingleThreadExecutor()
         startImageLabeling()
@@ -182,7 +184,11 @@ class CameraActivity : AppCompatActivity() {
             val lowercaseImageResult = img?.toLowerCase(Locale.getDefault())
             tvImageResult.text = lowercaseImageResult
             tvPredictionConfidence.text = imageAnalyzer.imagePrediction.value.toString()
-            updateObjectStatus(currentItemName, lowercaseImageResult)
+            if (currentItemName == lowercaseImageResult) {
+                imageAnalysis.clearAnalyzer()
+                imageLabelingStarted = false
+                updateObjectStatus(currentItemName, lowercaseImageResult)
+            }
         }
 
         // Update the imageLabelingStarted flag
@@ -205,15 +211,16 @@ class CameraActivity : AppCompatActivity() {
         // .runOnUiThread if you want to do something in the UI
     }
 
-/*
+
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+
+            File(it, getString(com.example.chatting.R.string.app_name)).apply { mkdirs() }
         }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
- */
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -231,13 +238,17 @@ class CameraActivity : AppCompatActivity() {
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
+            // Initialize the imageCapture variable
+            imageCapture = ImageCapture.Builder()
+                .build()
+
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
                 // Bind use cases to camera image analysis
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalysis
+                    this, cameraSelector, preview, imageAnalysis, imageCapture
                 )
 
             } catch (exc: Exception) {
@@ -249,6 +260,7 @@ class CameraActivity : AppCompatActivity() {
 
     private fun takePhotoAndSendToServer() {
         // Get a stable reference to the modifiable image capture use case
+        Log.d("OKAY IM INSIDE!??", "")
         val imageCapture = imageCapture ?: return
 
         // Create a time-stamped output file to hold the image
@@ -278,12 +290,25 @@ class CameraActivity : AppCompatActivity() {
 
                     // Send the photo back to the server
                     val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
-                    val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                    val byteArray = byteArrayOutputStream.toByteArray()
-                    val encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                    val sizeBeforeCompress = bitmap.allocationByteCount / 1024
+                    Log.d("BEFORE COMPRESS SIZE!!!:KB", "$sizeBeforeCompress")
 
-                    mSocket.emit("photo", encodedImage)
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+
+                    val sizeAfterCompress = byteArrayOutputStream.size() / 1024
+                    Log.d("AFTER COMPRESS SIZE!!!:KB", "$sizeAfterCompress")
+
+                    val byteArray = byteArrayOutputStream.toByteArray()
+                    val encodedImage = Base64.encodeToString(byteArray, Base64.NO_WRAP)
+
+                    println("emitting")
+
+                    println("Preparing to emit submitAnswer event")
+                    mSocket.emit("submitAnswer", encodedImage, "111", Ack { args ->
+                        Log.d(TAG, "Ack $args")
+                    })
+                    println("submitAnswer event emitted")
                 }
             }
         )

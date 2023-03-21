@@ -1,3 +1,4 @@
+const http = require('http');
 const {Server} = require("socket.io");
 
 const {checkImage} = require("./google_vision");
@@ -5,7 +6,7 @@ const {checkImage} = require("./google_vision");
 const mapList = require("./sample_maps/mapList.json")
 const {shuffleArray, distance} = require("./utility");
 
-let io
+
 const maxPlayerNumberInRoom = 2
 let rooms = {}
 
@@ -14,6 +15,10 @@ let error_radius = 0.5
 const maps = mapList.map(mapName => {
     return require("./sample_maps/" + mapName)
 })
+const server = http.createServer();
+let io = require("socket.io")(server, {
+    maxHttpBufferSize: 1e8, // Increase the limit as needed (in bytes)
+});
 
 function init(server) {
     console.log("server initializing")
@@ -196,18 +201,29 @@ function init(server) {
 
         socket.on("submitAnswer", (file, coordinate, callback) => {
             callback = checkCallback(callback, socket.id, "submitAnswer")
+            console.log("submitAnswer event received");
             if (!verifyRoomRequest(socket, callback)) return
+            
+            io.to(socket.data.roomID).emit("file recieved", file)
+            // Log if the encoded image was received
+            if (file) {
+                console.log("Encoded image received from player", socket.id)
+            } else {
+                console.log("No encoded image received from player", socket.id)
+            }
+        
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
             let currentItem = currentRoom["items"][currentRoom["itemIndex"]]
-            const locationMatchCondition = distance(coordinate, currentItem) <= error_radius
-            if(!locationMatchCondition){
-                callback({
-                    "status": "wrong_location"
-                })
-                return
-            }
+            //const locationMatchCondition = distance(coordinate, currentItem) <= error_radius
+            //if (!locationMatchCondition) {
+            //    callback({
+            //        "status": "wrong_location"
+            //    })
+            //    return
+            //}
+            console.log("submitAnswer event received");
             checkImage(file).then(detectedTags => {
                 const tagMatchCondition = detectedTags.find(tag => currentItem["name"] === tag) !== undefined
                 if (tagMatchCondition) {
@@ -224,7 +240,7 @@ function init(server) {
                         let winner = Object.keys(currentRoom["players"]).reduce((winnerID, currentID) => {
                             let currentScore = currentRoom["players"][currentID]["score"]
                             let winnerScore = currentRoom["players"][winnerID]["score"]
-                            if(currentScore > winnerScore){
+                            if (currentScore > winnerScore) {
                                 return currentID
                             }
                             return winnerID
