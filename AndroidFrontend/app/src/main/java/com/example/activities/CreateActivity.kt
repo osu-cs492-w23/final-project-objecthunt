@@ -105,15 +105,15 @@ class CreateActivity : AppCompatActivity() {
                 mSocket.emit(
                     "createRoom",
                     JSONObject("{'nickname': ${nickname}, 'itemsList': ${jsonArray}, 'timeLimit': ${timelimit}}"),
-                    Ack { args ->
+                    Ack { createRoomArgs ->
                         Log.d(
                             "CreateActivity",
-                            "Ack ${((args.get(0) as JSONObject).get("room") as JSONObject)}"
+                            "Ack ${((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject)}"
                         )
-                        if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
+                        if ("${((createRoomArgs[0] as JSONObject)).get("status")}" == "ok") {
                             editor.putString(
                                 "roomID",
-                                "${((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}"
+                                "${((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}"
                             )
                             editor.putString("host", nickname)
                             editor.putInt("timelimit", timelimit)
@@ -122,10 +122,10 @@ class CreateActivity : AppCompatActivity() {
                             mSocket.emit(
                                 "sendChat",
                                 "Your room ID is: ${
-                                    ((args.get(0) as JSONObject).get("room") as JSONObject).get("roomID")
+                                    ((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get("roomID")
                                 }",
-                                Ack { args ->
-                                    Log.d("SENDCHAT: ", "${((args[0] as JSONObject))}")
+                                Ack { sendChatArgs ->
+                                    Log.d("SENDCHAT: ", "${((sendChatArgs[0] as JSONObject))}")
                                 })
 
                             mSocket.emit("getChatHistory", Ack { args ->
@@ -133,11 +133,11 @@ class CreateActivity : AppCompatActivity() {
                                     "chatHistory",
                                     "${((args.get(0) as JSONObject).get("chatHistory"))}"
                                 )
-                                editor.commit()
+                                editor.apply()
 //                          Log.d("CHAT HISTORY UPDATED: ",  sharedPreference.getString("chatHistory", "").toString())
                             })
 
-                            editor.commit()
+                            editor.apply()
                             startActivity(intentChat)
 
                             // Make the user go to the main screen
