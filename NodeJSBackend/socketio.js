@@ -192,11 +192,11 @@ function init(server) {
             })
         })
 
-        socket.on("submitAnswer", (file, coordinate, callback) => {
+        socket.on("submitAnswer", (file, callback) => {
             callback = checkCallback(callback, socket.id, "submitAnswer")
             console.log("submitAnswer event received");
             if (!verifyRoomRequest(socket, callback)) return
-            
+
             io.to(socket.data.roomID).emit("file recieved", file)
             // Log if the encoded image was received
             if (file) {
@@ -204,7 +204,7 @@ function init(server) {
             } else {
                 console.log("No encoded image received from player", socket.id)
             }
-        
+
             console.log("player ", socket.id, " submitted an answer...")
             let currentRoom = rooms[socket.data.roomID]
             let currentPlayer = currentRoom["players"][socket.id]
@@ -220,7 +220,7 @@ function init(server) {
             checkImage(file).then(detectedTags => {
                 const tagMatchCondition = detectedTags.find(tag => currentItem["name"] === tag) !== undefined
                 if (tagMatchCondition) {
-                    currentPlayer["pictures"].push(file)
+                    // currentPlayer["pictures"].push(file)
                     currentPlayer["score"] += 1
                     currentRoom["itemIndex"] += 1
                     let item = currentRoom["items"][currentRoom["itemIndex"]]
@@ -228,7 +228,6 @@ function init(server) {
                         "status": "ok"
                     })
                     if (item === undefined) {
-                        currentPlayer["score"]++
                         currentRoom["gameEnded"] = true
                         let winner = Object.keys(currentRoom["players"]).reduce((winnerID, currentID) => {
                             let currentScore = currentRoom["players"][currentID]["score"]

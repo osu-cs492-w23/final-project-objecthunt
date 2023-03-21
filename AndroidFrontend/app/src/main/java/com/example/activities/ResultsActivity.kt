@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.MainActivity
 import com.example.SocketHandler
 import com.example.chatting.R
+import org.json.JSONObject
 
 class ResultsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,19 +18,31 @@ class ResultsActivity : AppCompatActivity() {
 
         val mSocket = SocketHandler.getSocket()
 
+        val winner = intent.getSerializableExtra("winner")
+        val room = JSONObject(intent.getSerializableExtra("room").toString())
+
         // update the score for the results of the game
         val userResultsTV: TextView = findViewById(R.id.user_results_tv)
         val opponentResultsTV: TextView = findViewById(R.id.opponent_results_tv)
+        val winnerResultsTV: TextView = findViewById(R.id.winner_results_tv)
 
-        // mSocket.on()
+        if(winner == mSocket.id()){
+            winnerResultsTV.text = "You won!"
+        } else {
+            winnerResultsTV.text = "You lost :("
+        }
 
-        // update the images/names for object list(s)
-        val userObjectsTV: TextView = findViewById(R.id.user_object_list)
-        val opponentObjectsTV: TextView = findViewById(R.id.opponent_object_list)
-        val userImage: ImageView = findViewById(R.id.user_image)
-        val opponentImage: ImageView = findViewById(R.id.opponent_image)
+        val playerListKeys = room.getJSONObject("players").keys()
+        while(playerListKeys.hasNext()){
+            val currentPlayerID: String = playerListKeys.next()
+            val currentPlayerScore: Int = room.getJSONObject("players").getJSONObject(currentPlayerID).getInt("score")
+            if(currentPlayerID == mSocket.id()){
+                userResultsTV.text = "Your score: $currentPlayerScore"
+            } else {
+                opponentResultsTV.text = "Opponent score: $currentPlayerScore"
+            }
+        }
 
-        // mSocket.on()
 
         // set a click listener for the Main Menu button, could end socket here too
         val mainMenuBtn: Button = findViewById(R.id.buttonMainMenu)

@@ -294,7 +294,7 @@ class CameraActivity : AppCompatActivity() {
                     Log.d("BEFORE COMPRESS SIZE!!!:KB", "$sizeBeforeCompress")
 
                     val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
 
                     val sizeAfterCompress = byteArrayOutputStream.size() / 1024
                     Log.d("AFTER COMPRESS SIZE!!!:KB", "$sizeAfterCompress")

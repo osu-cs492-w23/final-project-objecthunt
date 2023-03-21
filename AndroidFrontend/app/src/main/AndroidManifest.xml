@@ -45,6 +45,10 @@
             android:exported="false" />
 
         <activity
+            android:name="com.example.activities.ResultsActivity"
+            android:exported="false" />
+
+        <activity
             android:name="com.example.MainActivity"
             android:exported="true">
             <intent-filter>

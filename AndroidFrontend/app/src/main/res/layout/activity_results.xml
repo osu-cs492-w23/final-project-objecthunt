@@ -8,12 +8,54 @@
     android:background="@color/general_background"
     tools:context="com.example.activities.ResultsActivity">
 
+    <!--    <ImageView-->
+<!--        android:id="@+id/opponent_image"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        app:layout_constraintStart_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/opponent_results_tv" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/opponent_object_list"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:text="Object1\nObject2\nObject3"-->
+<!--        android:textColor="@color/primary_text"-->
+<!--        android:textSize="25sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/opponent_results_tv" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/user_image"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/user_results_tv" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/user_object_list"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:text="Object1\nObject2\nObject3"-->
+<!--        android:textColor="@color/primary_text"-->
+<!--        android:textSize="25sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/user_results_tv" />-->
+
+
     <TextView
         android:id="@+id/user_results_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="You: 0/5"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="328dp"
+        android:text="You: 0"
         android:textColor="@color/primary_text"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -24,54 +66,26 @@
         android:id="@+id/opponent_results_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Opponent: 0/5"
+        android:layout_marginTop="404dp"
+        android:layout_marginEnd="232dp"
+        android:text="Opponent: 0"
         android:textColor="@color/primary_text"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/opponent_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/opponent_results_tv" />
-
     <TextView
-        android:id="@+id/opponent_object_list"
+        android:id="@+id/winner_results_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Object1\nObject2\nObject3"
-        android:textColor="@color/primary_text"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/opponent_results_tv" />
-
-    <ImageView
-        android:id="@+id/user_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_results_tv" />
-
-    <TextView
-        android:id="@+id/user_object_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Object1\nObject2\nObject3"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="128dp"
         android:textColor="@color/primary_text"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_results_tv" />
-
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonMainMenu"
