@@ -49,6 +49,8 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var tvImageResult: TextView
     private lateinit var tvPredictionConfidence: TextView
     private lateinit var imageAnalyzer: ImageLabelAnalyzer
+    private lateinit var tvObjectStatus: TextView
+    private var currentItemName: String? = null
     //receive the item from the server
     //Image analyzer build
     private var imageAnalysis = ImageAnalysis.Builder()
@@ -89,9 +91,10 @@ class CameraActivity : AppCompatActivity() {
         tvImageResult = findViewById(com.example.chatting.R.id.tv_img_label)
         tvPredictionConfidence = findViewById(com.example.chatting.R.id.tv_prediction_accuracy)
         imageAnalyzer = ImageLabelAnalyzer()
+        tvObjectStatus = findViewById(com.example.chatting.R.id.tv_object_status)
         Log.d(TAG, "HELLO IAM HERE")
-        val currentItem: ItemToFind? = intent.getParcelableExtra("currentItem")
-        val currentItemName = currentItem?.name
+        val currentItem = intent.getSerializableExtra("currentItem") as ItemToFind
+        currentItemName = currentItem?.name
         Log.d("Current Item recieved from the Game:", "$currentItemName")
 
         //Dynamically observe LiveData changes from the ImageAnalyzer
@@ -151,7 +154,17 @@ class CameraActivity : AppCompatActivity() {
         //outputDirectory = getOutputDirectory()
 
         // cameraExecutor = Executors.newSingleThreadExecutor()
-        //startImageLabeling()
+        startImageLabeling()
+    }
+
+    //update status
+    private fun updateObjectStatus(targetItem: String?, imageResult: String?) {
+        Log.d("passed item", "$targetItem")
+        if (targetItem == imageResult) {
+            tvObjectStatus.text = "Object Found!"
+        } else {
+            tvObjectStatus.text = "Object Not Found!"
+        }
     }
 
     //start image labeling (running constantly)
@@ -164,8 +177,13 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             imageAnalyzer
         )
-        tvImageResult.text = imageAnalyzer.imageResult.value
-        tvPredictionConfidence.text = imageAnalyzer.imagePrediction.value.toString()
+
+        imageAnalyzer.imageResult.observe(this) { img ->
+            val lowercaseImageResult = img?.toLowerCase(Locale.getDefault())
+            tvImageResult.text = lowercaseImageResult
+            tvPredictionConfidence.text = imageAnalyzer.imagePrediction.value.toString()
+            updateObjectStatus(currentItemName, lowercaseImageResult)
+        }
 
         // Update the imageLabelingStarted flag
         imageLabelingStarted = true
