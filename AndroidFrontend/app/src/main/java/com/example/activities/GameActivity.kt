@@ -1,7 +1,5 @@
 package com.example.activities
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +7,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.MainActivity
 import com.example.SocketHandler
 import com.example.chatting.R
 import com.example.data.ItemToFind
@@ -22,6 +19,8 @@ import org.json.JSONObject
 
 class GameActivity : AppCompatActivity() {
     var currentItem: ItemToFind? = null
+    lateinit var userScoreTV: TextView
+    lateinit var opponentScoreTV: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,8 +28,8 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
 
         // text views for later UI updates
-        val userScoreTV: TextView = findViewById(R.id.user_score_tv)
-        val opponentScoreTV: TextView = findViewById(R.id.opponent_score_tv)
+        userScoreTV = findViewById(R.id.user_score_tv)
+        opponentScoreTV = findViewById(R.id.opponent_score_tv)
         val currentObjectTV: TextView = findViewById(R.id.current_object_tv)
 
         // set a click listener for the camera button
@@ -93,7 +92,21 @@ class GameActivity : AppCompatActivity() {
         // update the object text when the next object is up
         mSocket.on("newItem") { params ->
             val nextItem = params[0] as JSONObject
-            val currentRoom = params[0] as JSONObject
+            val currentRoom = params[1] as JSONObject
+            val playerListKeys = currentRoom.getJSONObject("players").keys()
+            var userScore = 0
+            var opponentScore = 0
+            while(playerListKeys.hasNext()){
+                val currentPlayerID: String = playerListKeys.next()
+                val currentPlayerScore: Int = currentRoom.getJSONObject("players").getJSONObject(currentPlayerID).getInt("score")
+                if(currentPlayerID === mSocket.id()){
+                    userScore = currentPlayerScore
+                } else {
+                    opponentScore = currentPlayerScore
+                }
+            }
+//            userScore = currentRoom.getJSONObject("players").getJSONObject(mSocket.id()).getInt("score")
+//            opponentScore = currentRoom.getJSONObject("players").getJSONObject(mSocket.id()).getInt("score")
             runOnUiThread {
                 // ...
                 currentItem = ItemToFind(
@@ -109,16 +122,18 @@ class GameActivity : AppCompatActivity() {
             // Stuff that updates the UI
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem?.name}"
-
-                val userScore =
-                    currentRoom.getJSONArray("players").getJSONObject(mSocket.id().toInt())
-                        .getInt("score")
-                userScoreTV.text = "${mSocket.id()}: ${userScore}/5"
+            //(params[1] as JSONObject).getJSONObject("players").getJSONObject("SMOu5ICTdmJcCrZlAAAJ").getInt("score")
+                opponentScoreTV.text = "Opponent: $opponentScore"
+                    userScoreTV.text = "You: $userScore"
             }
+        }
 
-            if (currentRoom.getBoolean("gameEnded")) {
-                startActivity(Intent(this, ResultsActivity::class.java))
-            }
+        mSocket.on("gameEnded"){params ->
+            val paramsObj = params[0] as JSONObject
+            val resultIntent = Intent(this, ResultsActivity::class.java)
+            resultIntent.putExtra("winner", paramsObj.getString("winner"))
+            resultIntent.putExtra("room", paramsObj.getString("room"))
+            startActivity(resultIntent)
         }
 
         cameraBtn.isEnabled = false // Disable the camera button initially
@@ -127,7 +142,6 @@ class GameActivity : AppCompatActivity() {
             onCameraButtonClick()
         }
     }
-
     private fun onCameraButtonClick() {
         if (currentItem != null) {
             val intentCamera = Intent(this, CameraActivity::class.java)
@@ -145,26 +159,4 @@ class GameActivity : AppCompatActivity() {
                 .position(location)
         )
     }
-
-    override fun onBackPressed() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Quit the game")
-        builder.setMessage("Are you sure to leave?")
-
-        builder.setPositiveButton("Yes", actionListenerYes)
-        builder.setNegativeButton("No", actionListenerNo)
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    var actionListenerYes =
-        DialogInterface.OnClickListener { dialog, which ->
-            startActivity(Intent(this, MainActivity::class.java))
-        }
-
-    var actionListenerNo =
-        DialogInterface.OnClickListener { dialog, which ->
-            dialog.cancel()
-        }
 }

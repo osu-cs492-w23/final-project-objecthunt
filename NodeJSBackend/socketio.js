@@ -285,6 +285,7 @@ async function startGame(room) {
             return "draw"
         }
     )
+        console.log("Game ended with winner: ", winner)
         io.to(room["roomID"]).emit("gameEnded", {
             "winner": winner,
             "room": room

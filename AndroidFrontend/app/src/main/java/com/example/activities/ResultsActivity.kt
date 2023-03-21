@@ -26,10 +26,16 @@ class ResultsActivity : AppCompatActivity() {
         val opponentResultsTV: TextView = findViewById(R.id.opponent_results_tv)
         val winnerResultsTV: TextView = findViewById(R.id.winner_results_tv)
 
-        if(winner == mSocket.id()){
-            winnerResultsTV.text = "You won!"
-        } else {
-            winnerResultsTV.text = "You lost :("
+        when (winner) {
+            "draw" -> {
+                winnerResultsTV.text = "Game Draw"
+            }
+            mSocket.id() -> {
+                winnerResultsTV.text = "You won!"
+            }
+            else -> {
+                winnerResultsTV.text = "You lost :("
+            }
         }
 
         val playerListKeys = room.getJSONObject("players").keys()
