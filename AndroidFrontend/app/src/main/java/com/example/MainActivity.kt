@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         val intentCreate = Intent(this, CreateActivity::class.java)
         val intentJoin = Intent(this, JoinActivity::class.java)
-        val intentCamera = Intent(this, CameraActivity::class.java)
+        //val intentCamera = Intent(this, CameraActivity::class.java)
         //val intentGame = Intent(this, GameActivity::class.java)
 
         val createBtn: Button = findViewById(R.id.buttonCreate)

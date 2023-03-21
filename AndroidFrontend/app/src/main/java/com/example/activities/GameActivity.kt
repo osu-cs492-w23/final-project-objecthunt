@@ -21,38 +21,12 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        // set Corvallis as a test location
-        val testLocation = LatLng(44.571651, -123.277702)
-
-        // get reference to the map object
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
-
-        mapFragment?.getMapAsync { googleMap ->
-            addMarker(googleMap, testLocation)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(testLocation))
-//            // set camera starting position bounds to set location
-////            googleMap.setOnMapLoadedCallback {
-////                val bounds = LatLngBounds.builder()
-////                bounds.include(testLocation)
-////                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
-////            }
-        }
-
-        // update the score text when someone finds an object successfully
+        // text views for later UI updates
         val userScoreTV: TextView = findViewById(R.id.user_score_tv)
         val opponentScoreTV: TextView = findViewById(R.id.opponent_score_tv)
-
-        // update the object text when the next object is up
         val currentObjectTV: TextView = findViewById(R.id.current_object_tv)
 
-        // set a click listener for the camera button
-        val cameraBtn: Button = findViewById(R.id.buttonCameraMainScreen)
-        val intentCamera = Intent(this, CameraActivity::class.java)
-        cameraBtn.setOnClickListener {
-            startActivity(intentCamera)
-        }
-
+        // update the object text when the first object is up
         val mSocket = SocketHandler.getSocket()
         mSocket.on("itemGenerated"){params ->
             println("item generated received: $params")
@@ -68,6 +42,7 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
+        // update the object text when the next object is up
         mSocket.on("newItem"){params ->
             val nextItem = params[0] as JSONObject
             val currentRoom = params[0] as JSONObject
@@ -79,7 +54,39 @@ class GameActivity : AppCompatActivity() {
             // Stuff that updates the UI
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem.name}"
+
+                val userScore = currentRoom.getJSONArray("players").getJSONObject(mSocket.id().toInt()).getInt("score")
+                userScoreTV.text = "${mSocket.id()}: ${userScore}/5"
             }
+
+            if (currentRoom.getBoolean("gameEnded")) {
+                startActivity(Intent(this, ResultsActivity::class.java))
+            }
+        }
+
+        // set Corvallis as a test location
+        val currentObjectLocation = LatLng(currentItem.latitude.toDouble(), currentItem.longtitude.toDouble())
+
+        // get reference to the map object
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
+
+        mapFragment?.getMapAsync { googleMap ->
+            addMarker(googleMap, currentObjectLocation)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentObjectLocation))
+//            // set camera starting position bounds to set location
+////            googleMap.setOnMapLoadedCallback {
+////                val bounds = LatLngBounds.builder()
+////                bounds.include(testLocation)
+////                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+////            }
+        }
+
+        // set a click listener for the camera button
+        val cameraBtn: Button = findViewById(R.id.buttonCameraMainScreen)
+        val intentCamera = Intent(this, CameraActivity::class.java)
+        cameraBtn.setOnClickListener {
+            startActivity(intentCamera)
         }
     }
 
