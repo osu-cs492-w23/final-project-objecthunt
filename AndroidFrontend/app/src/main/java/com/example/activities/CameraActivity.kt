@@ -49,7 +49,6 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var tvImageResult: TextView
     private lateinit var tvPredictionConfidence: TextView
     private lateinit var imageAnalyzer: ImageLabelAnalyzer
-
     //receive the item from the server
     //Image analyzer build
     private var imageAnalysis = ImageAnalysis.Builder()
