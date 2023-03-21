@@ -294,13 +294,15 @@ class CameraActivity : AppCompatActivity() {
                     Log.d("BEFORE COMPRESS SIZE!!!:KB", "$sizeBeforeCompress")
 
                     val byteArrayOutputStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream)
 
                     val sizeAfterCompress = byteArrayOutputStream.size() / 1024
                     Log.d("AFTER COMPRESS SIZE!!!:KB", "$sizeAfterCompress")
 
                     val byteArray = byteArrayOutputStream.toByteArray()
                     val encodedImage = Base64.encodeToString(byteArray, Base64.NO_WRAP)
+
+                    Log.d("The actual image base64:", encodedImage.toString())
 
                     println("emitting")
 

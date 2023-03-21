@@ -18,17 +18,18 @@
         <androidx.camera.view.PreviewView
             android:id="@+id/pvv_main_preview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/circle_frame" />
+        </androidx.camera.view.PreviewView>
 
         <com.example.views.CameraCircleMaskView
             android:id="@+id/circle_mask_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/circle_frame" />
 
     </FrameLayout>
 

@@ -12,8 +12,8 @@ object SocketHandler {
     fun setSocket() {
         try {
 
-//            mSocket = IO.socket("http://192.168.86.35:3005")
-            mSocket = IO.socket("http://10.0.2.2:3005")
+            mSocket = IO.socket("http://192.168.8.142:3005")
+            //mSocket = IO.socket("http://10.0.2.2:3005")
 
         } catch (e: URISyntaxException) {
             Log.d("SocketHandler", "setSocket() throw the error")
