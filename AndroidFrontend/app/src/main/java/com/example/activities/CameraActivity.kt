@@ -35,6 +35,7 @@ import java.util.logging.Logger
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import com.example.data.ItemToFind
 import java.io.ByteArrayOutputStream
 
 
@@ -90,6 +91,9 @@ class CameraActivity : AppCompatActivity() {
         tvPredictionConfidence = findViewById(com.example.chatting.R.id.tv_prediction_accuracy)
         imageAnalyzer = ImageLabelAnalyzer()
         Log.d(TAG, "HELLO IAM HERE")
+        val currentItem: ItemToFind? = intent.getParcelableExtra("currentItem")
+        val currentItemName = currentItem?.name
+        Log.d("Current Item recieved from the Game:", "$currentItemName")
 
         //Dynamically observe LiveData changes from the ImageAnalyzer
         imageAnalyzer.imageResult.observe(this) { img ->

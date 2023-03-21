@@ -2,6 +2,7 @@ package com.example.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -40,9 +41,11 @@ class GameActivity : AppCompatActivity() {
             val currentObjectLocation = LatLng(currentItem.latitude.toDouble(), currentItem.longtitude.toDouble())
 
             // get reference to the map object
-            val mapFragment =
-                supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as? SupportMapFragment
             // Stuff that updates the UI
+
+            Log.d("Current ITEM:", "$currentItem")
+
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem.name}"
                 mapFragment?.getMapAsync { googleMap ->
@@ -67,6 +70,8 @@ class GameActivity : AppCompatActivity() {
                 nextItem.getLong("latitude"),
                 nextItem.getLong("longtitude")
             )
+
+
             // Stuff that updates the UI
             runOnUiThread {
                 currentObjectTV.text = "Current Object: ${currentItem.name}"
@@ -85,6 +90,7 @@ class GameActivity : AppCompatActivity() {
         val cameraBtn: Button = findViewById(R.id.buttonCameraMainScreen)
         val intentCamera = Intent(this, CameraActivity::class.java)
         cameraBtn.setOnClickListener {
+            intentCamera.putExtra("currentItem", currentItem)
             startActivity(intentCamera)
         }
     }
