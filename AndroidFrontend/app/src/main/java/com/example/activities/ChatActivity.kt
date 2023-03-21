@@ -67,6 +67,23 @@ class ChatActivity : AppCompatActivity() {
             mSocket.emit("getChatHistory", Ack { args ->
                 val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
                 val tempHistory = getChatList(historyString)
+                viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 2))
+                viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
+            })
+        }
+
+        mSocket.on("readied") {
+            mSocket.emit("getChatHistory", Ack { args ->
+                val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
+                val tempHistory = getChatList(historyString)
+                viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
+            })
+        }
+
+        mSocket.on("unreadied") {
+            mSocket.emit("getChatHistory", Ack { args ->
+                val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
+                val tempHistory = getChatList(historyString)
                 viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
             })
         }
@@ -104,12 +121,6 @@ class ChatActivity : AppCompatActivity() {
                     Log.d("Status", "${((args.get(0) as JSONObject))}")
                 })
 
-                mSocket.emit("getChatHistory", Ack { args ->
-                    val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
-                    val tempHistory = getChatList(historyString)
-                    viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
-                })
-
 
                 mSocket.on("roomReadied",
                     Emitter.Listener { startGame(intentGame) })
@@ -119,12 +130,6 @@ class ChatActivity : AppCompatActivity() {
                 readyBtn.setBackgroundColor(unready)
                 mSocket.emit("unready", Ack { args ->
                     Log.d("Status", "${((args.get(0) as JSONObject))}")
-                })
-
-                mSocket.emit("getChatHistory", Ack { args ->
-                    val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
-                    val tempHistory = getChatList(historyString)
-                    viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
                 })
             }
         }
@@ -176,7 +181,7 @@ class ChatActivity : AppCompatActivity() {
         builder.setMessage("Are you sure to leave?")
 
         builder.setPositiveButton("Yes", actionListenerYes)
-        builder.setNegativeButton("No", null)
+        builder.setNegativeButton("No", actionListenerNo)
 
         val dialog = builder.create()
         dialog.show()

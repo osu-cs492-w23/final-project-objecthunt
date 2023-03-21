@@ -1,5 +1,7 @@
 package com.example.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.MainActivity
 import com.example.SocketHandler
 import com.example.chatting.R
 import com.example.data.ItemToFind
@@ -142,4 +145,26 @@ class GameActivity : AppCompatActivity() {
                 .position(location)
         )
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Quit the game")
+        builder.setMessage("Are you sure to leave?")
+
+        builder.setPositiveButton("Yes", actionListenerYes)
+        builder.setNegativeButton("No", actionListenerNo)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    var actionListenerYes =
+        DialogInterface.OnClickListener { dialog, which ->
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+    var actionListenerNo =
+        DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }
 }

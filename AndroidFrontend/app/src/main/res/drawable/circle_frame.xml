@@ -6,7 +6,7 @@
         </shape>
     </item>
     <item>
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <stroke
                 android:width="200dp"
                 android:color="@color/new_general_background" />

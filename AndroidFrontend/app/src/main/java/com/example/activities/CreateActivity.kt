@@ -102,7 +102,7 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 //        Log.d("JSONArray: ", "$stringToJA")
 
         viewModel.premadeMaps.observe(this) {
-            Log.d("PLZZZZZZ", "updating adapter")
+            //Log.d("PLZZZZZZ", "updating adapter")
             val spinner = findViewById<Spinner>(R.id.spinner_maps)
             spinner.onItemSelectedListener = this
 
