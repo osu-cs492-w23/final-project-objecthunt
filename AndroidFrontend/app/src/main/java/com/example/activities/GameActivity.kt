@@ -2,8 +2,8 @@ package com.example.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chatting.R
 import com.example.SocketHandler
+import com.example.chatting.R
 
 class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

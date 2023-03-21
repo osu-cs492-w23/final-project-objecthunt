@@ -11,7 +11,7 @@ object SocketHandler {
     @Synchronized
     fun setSocket() {
         try {
-            mSocket = IO.socket("http://10.0.2.2:7617")
+            mSocket = IO.socket("http://10.0.2.2:3005")
         } catch (e: URISyntaxException) {
             Log.d("SocketHandler", "setSocket() throw the error")
         }
@@ -19,6 +19,14 @@ object SocketHandler {
 
     @Synchronized
     fun getSocket(): Socket {
+        return mSocket
+    }
+
+    @Synchronized
+    fun getSocketOrNull(): Socket? {
+        if (!this::mSocket.isInitialized) {
+            return null
+        }
         return mSocket
     }
 

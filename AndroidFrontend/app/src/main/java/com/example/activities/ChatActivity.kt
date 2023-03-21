@@ -1,6 +1,8 @@
 package com.example.activities
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -10,28 +12,27 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chatting.R
 import com.example.SocketHandler
-import com.example.data.Message
+import com.example.chatting.R
 import com.example.ui.ChatAdapter
 import com.example.ui.ChatViewModel
 import io.socket.client.Ack
 import io.socket.emitter.Emitter
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.Instant
 import java.util.*
 
 
 class ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,36 +42,53 @@ class ChatActivity : AppCompatActivity() {
         val mSocket = SocketHandler.getSocket()
 
         val ready = Color.parseColor("#303131")
-        val unready = Color.parseColor("#f08a0c")
+        val unready = Color.parseColor("#7586fd")
 
         val intentGame = Intent(this, GameActivity::class.java)
+//        val intentMain =
 
         val shared = getSharedPreferences("settings", MODE_PRIVATE)
         val editor = shared.edit()
         val roomID = shared.getString("roomID", "").toString()
-        val host = shared.getString("host", "").toString()
-        val guest = shared.getString("guest", "").toString()
         val chatHistory = shared.getString("chatHistory", "Error").toString()
 
-        mSocket.on("chatUpdated") {
-                message -> viewModel.newMessageReceived(message[0] as JSONObject)
+        Log.d("Chat", "${getChatList(chatHistory)}")
+        for (i in 0 until getChatList(chatHistory).length()) {
+            Log.d("PLEASE", "DANG")
+            val chatList = getChatList(chatHistory)
+            viewModel.newMessageReceived(chatList.getJSONObject(i))
         }
 
-        Log.d("CHAT Activity: ", chatHistory)
+        mSocket.on("chatUpdated") { message ->
+            viewModel.newMessageReceived(message[0] as JSONObject)
+        }
+
+        mSocket.on("roomFilled") {
+            mSocket.emit("getChatHistory", Ack { args ->
+                val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
+                val tempHistory = getChatList(historyString)
+                viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
+            })
+        }
+
 
         var isReady = false
 
         val readyBtn = findViewById<Button>(R.id.buttonReady)
         val sendBtn = findViewById<Button>(R.id.send_button)
         val chatEntry = findViewById<EditText>(R.id.chatbox)
+        val roomHeader = findViewById<TextView>(R.id.roomID_tv)
+
+        roomHeader.text = "Room ID: $roomID"
 
         val chatListRV: RecyclerView = findViewById(R.id.chatRecyclerView)
         chatListRV.layoutManager = LinearLayoutManager(this)
         chatListRV.setHasFixedSize(true)
 
-        val adapter = ChatAdapter(host)
+        val adapter = ChatAdapter(roomID)
         chatListRV.adapter = adapter
-        viewModel.chats.observe(this){
+
+        viewModel.chats.observe(this) {
             println("updating adapter")
             adapter.messageList = it.toList()
             adapter.notifyDataSetChanged()
@@ -85,27 +103,17 @@ class ChatActivity : AppCompatActivity() {
                 mSocket.emit("ready", Ack { args ->
                     Log.d("Status", "${((args.get(0) as JSONObject))}")
                 })
+
                 mSocket.emit("getChatHistory", Ack { args ->
-                    editor.putString(
-                        "chatHistory",
-                        "${((args.get(0) as JSONObject).get("chatHistory"))}"
-                    )
-                    editor.commit()
-                    Log.d(
-                        "AGAIN",
-                        "${getChatList(shared.getString("chatHistory", "Error").toString())}"
-                    )
+                    val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
+                    val tempHistory = getChatList(historyString)
+                    viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
                 })
 
-                adapter.updateChatList(
-                    getChatList(
-                        shared.getString("chatHistory", "Error").toString()
-                    )
-                )
-                adapter.notifyDataSetChanged()
 
                 mSocket.on("roomReadied",
                     Emitter.Listener { startGame(intentGame) })
+
             } else {
                 readyBtn.text = "Ready"
                 readyBtn.setBackgroundColor(unready)
@@ -114,24 +122,11 @@ class ChatActivity : AppCompatActivity() {
                 })
 
                 mSocket.emit("getChatHistory", Ack { args ->
-                    editor.putString(
-                        "chatHistory",
-                        "${((args.get(0) as JSONObject).get("chatHistory"))}"
-                    )
-                    editor.commit()
+                    val historyString = ((args.get(0) as JSONObject)).get("chatHistory").toString()
+                    val tempHistory = getChatList(historyString)
+                    viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
                 })
-
-                adapter.updateChatList(
-                    getChatList(
-                        shared.getString("chatHistory", "Error").toString()
-                    )
-                )
-                adapter.notifyDataSetChanged()
             }
-
-            adapter.updateChatList(getChatList(shared.getString("chatHistory", "Error").toString()))
-            adapter.notifyDataSetChanged()
-
         }
 
         sendBtn.setOnClickListener {
@@ -144,9 +139,6 @@ class ChatActivity : AppCompatActivity() {
 
                 chatListRV.scrollToPosition(adapter.itemCount - 1)
                 chatEntry.setText("")
-                mSocket.emit("getChatHistory", Ack { args ->
-                    Log.d("ChatHistory", "${((args.get(0) as JSONObject))}")
-                })
             }
             hideSoftKeyboard()
         }
@@ -166,21 +158,37 @@ class ChatActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getChatList(data: String): MutableList<Message> {
-        Log.d("FUnction: ", "$data")
+    fun getChatList(data: String): JSONArray {
         val chatHistory = JSONArray(data)
-        val messageList = mutableListOf<Message>()
+        val messageList = JSONArray()
 
         for (i in 0 until chatHistory.length()) {
             val chat = chatHistory.getJSONObject(i)
             Log.d("HERE", "$chat")
-            val message = Message(
-                sender = "${chat.get("sender")}",
-                body = "${chat.get("body")}",
-                timeStamp = Date.from(Instant.now())
-            )
-            messageList.apply { add(message) }
+            messageList.put(chat)
         }
         return messageList
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Leave Chat room")
+        builder.setMessage("Are you sure to leave?")
+
+        builder.setPositiveButton("Yes", actionListenerYes)
+        builder.setNegativeButton("No", null)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    var actionListenerYes =
+        DialogInterface.OnClickListener { dialog, which ->
+            finish()
+        }
+
+    var actionListenerNo =
+        DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }
 }
