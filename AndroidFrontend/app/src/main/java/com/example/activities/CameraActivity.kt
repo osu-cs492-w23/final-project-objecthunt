@@ -262,7 +262,7 @@ class CameraActivity : AppCompatActivity() {
                     val byteArray = byteArrayOutputStream.toByteArray()
                     val encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
-                    mSocket.emit("photo", encodedImage)
+                    mSocket.emit("submitAnswer", encodedImage)
                 }
             }
         )
