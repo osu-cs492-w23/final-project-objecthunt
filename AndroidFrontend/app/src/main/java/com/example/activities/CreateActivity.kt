@@ -67,7 +67,6 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val editor = sharedPreference.edit()
 
 
-
         val item1 = JSONObject()
         try {
             item1.put("name", "1")

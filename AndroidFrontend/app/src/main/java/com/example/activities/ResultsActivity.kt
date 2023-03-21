@@ -10,7 +10,7 @@ import com.example.MainActivity
 import com.example.SocketHandler
 import com.example.chatting.R
 
-class ResultsActivity: AppCompatActivity() {
+class ResultsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
