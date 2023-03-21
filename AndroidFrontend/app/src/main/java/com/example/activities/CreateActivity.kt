@@ -5,13 +5,15 @@ import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
+import android.view.View
+import android.widget.*
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatting.R
 import com.example.SocketHandler
-import com.example.data.ItemToFind
+import com.example.ui.SpinnerViewModel
+import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Ack
 import org.json.JSONArray
 import org.json.JSONException
@@ -19,8 +21,14 @@ import org.json.JSONObject
 import java.util.*
 
 
-class CreateActivity : AppCompatActivity() {
-    private var premadeMaps = mutableListOf<List<ItemToFind>>()
+class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+    private var premadeMaps = mutableListOf<JSONArray>()
+    private var mapNames = mutableListOf<String>()
+    private var selection = JSONArray()
+    private var idx = 0
+    private var length = 0
+    private val viewModel: SpinnerViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,24 +40,21 @@ class CreateActivity : AppCompatActivity() {
 
         val mSocket = SocketHandler.getSocket()
 
-        mSocket.emit("getMaps", Ack{args ->
+        Log.d("Create Activity Length is ", length.toString())
+
+        mSocket.emit("getMaps", Ack{ args ->
             val mapList: JSONArray = (args[0] as JSONObject).get("maps") as JSONArray
             for(i in 0 until mapList.length()){
                 val currentMap = mapList.getJSONObject(i)
                 val itemList = currentMap.get("items") as JSONArray
-                val newMap = mutableListOf<ItemToFind>()
-                for(j in 0 until itemList.length()){
-                    val currentItem = itemList.getJSONObject(i)
-                    newMap.add(ItemToFind(
-                        currentItem.getString("name"),
-                        currentItem.getLong("latitude"),
-                        currentItem.getLong("longtitude")
-                    ))
-                }
-                premadeMaps.add(newMap.toList())
+                premadeMaps.add(itemList)
+                Log.d("GET MAPS", "HERE")
+                mapNames.add("Map " + (i + 1).toString())
             }
 
             println("premade maps processed: $premadeMaps")
+            Log.d("Create Activity","premade maps processed: $premadeMaps")
+            viewModel.updatePremadeMaps(premadeMaps)
         })
 
         val usernameEntry = findViewById<EditText>(R.id.hostusername)
@@ -93,6 +98,24 @@ class CreateActivity : AppCompatActivity() {
 
         Log.d("JSONArray: ", "$stringToJA")
 
+        viewModel.premadeMaps.observe(this){
+            Log.d("PLZZZZZZ", "updating adapter")
+            val spinner = findViewById<Spinner>(R.id.spinner_maps)
+            spinner.onItemSelectedListener = this
+
+            val arrayAdapter : ArrayAdapter<*> = ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                mapNames)
+
+            arrayAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item)
+
+            spinner.adapter = arrayAdapter
+
+
+        }
+
         CreateBtn.setOnClickListener {
             val nickname = usernameEntry.text.toString()
             val min = minEntry.text.toString()
@@ -104,7 +127,7 @@ class CreateActivity : AppCompatActivity() {
                 mSocket.emit("echoTest", "CONNECTED")
                 mSocket.emit(
                     "createRoom",
-                    JSONObject("{'nickname': ${nickname}, 'itemsList': ${jsonArray}, 'timeLimit': ${timelimit}}"),
+                    JSONObject("{'nickname': ${nickname}, 'itemsList': ${selection}, 'timeLimit': ${timelimit}}"),
                     Ack { createRoomArgs ->
                         Log.d(
                             "CreateActivity",
@@ -115,7 +138,7 @@ class CreateActivity : AppCompatActivity() {
                                 "roomID",
                                 "${((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get("roomID")}"
                             )
-                            editor.putString("host", nickname)
+                            editor.putString("nickname", nickname)
                             editor.putInt("timelimit", timelimit)
 
 
@@ -144,14 +167,44 @@ class CreateActivity : AppCompatActivity() {
                             finish()
                         } else {
                             Log.d("Create Activity", "Unable to create a room")
+                            val snackbar = Snackbar
+                                .make(it, "Something went wrong. Try again.", Snackbar.LENGTH_LONG)
+                            snackbar.show()
                         }
                     })
 
                 // Need to block the back button or
                 // warn the user that if they press the back button, it will go to the main
             }
+            else {
+                val snackbar = Snackbar
+                    .make(it, "ERROR: Set your time over 0 sec", Snackbar.LENGTH_LONG)
+                snackbar.show()
+            }
         }
     }
+
+    override fun onItemSelected(parent: AdapterView<*>?,
+                                view: View, position: Int,
+                                id: Long) {
+        Log.d("Selection is now", "${premadeMaps[position]}}")
+        idx = position
+        selection = premadeMaps[idx]
+
+        var text = ""
+
+        for (i in 0 until selection.length())
+        {
+            val currentItem = selection.getJSONObject(i)
+            text += currentItem.get("name").toString() + " "
+        }
+
+        val itemListText = findViewById<TextView>(R.id.items)
+        itemListText.text = text
+        Log.d("ITEMS!!!!!!!!!!!!!!!!", text)
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
 
     fun calculateTime(min: String, sec: String): Int {
         var result: Int = 0

@@ -7,10 +7,12 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chatting.R
 import com.example.SocketHandler
+import com.example.chatting.R
+import com.google.android.material.snackbar.Snackbar
 import io.socket.client.Ack
 import org.json.JSONObject
+
 
 class JoinActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class JoinActivity : AppCompatActivity() {
                     JSONObject("{'roomID': ${roomID}, 'nickname': ${nickname}}"),
                     Ack { args ->
                         if ("${((args[0] as JSONObject)).get("status")}" == "ok") {
-                            editor.putString("guest", nickname)
+                            editor.putString("nickname", nickname)
 
                             mSocket.emit("getChatHistory", Ack { args ->
                                 editor.putString(
@@ -53,11 +55,17 @@ class JoinActivity : AppCompatActivity() {
                             })
 
                             editor.commit()
+                            Log.d("Join Activity", "Unable to join a room")
                             startActivity(intentChat)
                             finish()
 
                         } else {
                             Log.d("Join Activity", "Unable to join a room")
+                            editor.putString("nickname", nickname)
+                            editor.commit()
+                            val snackbar = Snackbar
+                                .make(it, "ERROR: Invalid RoomID. Please check your roomID again.", Snackbar.LENGTH_LONG)
+                            snackbar.show()
                         }
                     })
 

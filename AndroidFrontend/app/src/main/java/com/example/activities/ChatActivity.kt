@@ -1,6 +1,8 @@
 package com.example.activities
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -10,23 +12,21 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chatting.R
 import com.example.SocketHandler
-import com.example.data.Message
+import com.example.chatting.R
 import com.example.ui.ChatAdapter
 import com.example.ui.ChatViewModel
 import io.socket.client.Ack
 import io.socket.emitter.Emitter
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.Instant
 import java.util.*
 
 
@@ -41,15 +41,14 @@ class ChatActivity : AppCompatActivity() {
         val mSocket = SocketHandler.getSocket()
 
         val ready = Color.parseColor("#303131")
-        val unready = Color.parseColor("#f08a0c")
+        val unready = Color.parseColor("#7586fd")
 
         val intentGame = Intent(this, GameActivity::class.java)
+//        val intentMain =
 
         val shared = getSharedPreferences("settings", MODE_PRIVATE)
         val editor = shared.edit()
         val roomID = shared.getString("roomID", "").toString()
-        val host = shared.getString("host", "").toString()
-        val guest = shared.getString("guest", "").toString()
         val chatHistory = shared.getString("chatHistory", "Error").toString()
 
         Log.d("Chat", "${getChatList(chatHistory)}")
@@ -78,6 +77,9 @@ class ChatActivity : AppCompatActivity() {
         val readyBtn = findViewById<Button>(R.id.buttonReady)
         val sendBtn = findViewById<Button>(R.id.send_button)
         val chatEntry = findViewById<EditText>(R.id.chatbox)
+        val roomHeader = findViewById<TextView>(R.id.roomID_tv)
+
+        roomHeader.text = "Room ID: $roomID"
 
         val chatListRV: RecyclerView = findViewById(R.id.chatRecyclerView)
         chatListRV.layoutManager = LinearLayoutManager(this)
@@ -108,7 +110,6 @@ class ChatActivity : AppCompatActivity() {
                     viewModel.newMessageReceived(tempHistory.getJSONObject(tempHistory.length() - 1))
                 })
 
-                //viewModel.newMessageReceived(message[0] as JSONObject)
 
                 mSocket.on("roomReadied",
                     Emitter.Listener { startGame(intentGame) })
@@ -168,4 +169,26 @@ class ChatActivity : AppCompatActivity() {
         }
         return messageList
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Leave Chat room")
+        builder.setMessage("Are you sure to leave?")
+
+        builder.setPositiveButton("Yes", actionListenerYes)
+        builder.setNegativeButton("No", null)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    var actionListenerYes =
+        DialogInterface.OnClickListener { dialog, which ->
+            finish()
+        }
+
+    var actionListenerNo =
+        DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }
 }

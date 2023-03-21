@@ -1,7 +1,7 @@
 <resources>
 
     <style name="Theme.Chatting" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="colorPrimary">@color/new_general_background</item>
+        <item name="android:statusBarColor">@color/new_general_background</item>
     </style>
 </resources>
