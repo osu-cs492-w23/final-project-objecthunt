@@ -66,7 +66,8 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val sharedPreference = getSharedPreferences("settings", MODE_PRIVATE)
         val editor = sharedPreference.edit()
 
-
+        val defaultValue = sharedPreference.getString("nickname", "User" + getUniqueNumber(4)).toString()
+        usernameEntry.setText(defaultValue)
 
         val item1 = JSONObject()
         try {
@@ -149,17 +150,6 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             editor.putString("nickname", nickname)
                             editor.putInt("timelimit", timelimit)
 
-                            mSocket.emit(
-                                "sendChat",
-                                "Your room ID is: ${
-                                    ((createRoomArgs.get(0) as JSONObject).get("room") as JSONObject).get(
-                                        "roomID"
-                                    )
-                                }",
-                                Ack { sendChatArgs ->
-                                    Log.d("SENDCHAT: ", "${((sendChatArgs[0] as JSONObject))}")
-                                })
-
                             mSocket.emit("getChatHistory", Ack { args ->
                                 editor.putString(
                                     "chatHistory",
@@ -228,4 +218,6 @@ class CreateActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         return result
     }
+
+    private fun getUniqueNumber(length: Int) = (0..9).shuffled().take(length).joinToString("")
 }

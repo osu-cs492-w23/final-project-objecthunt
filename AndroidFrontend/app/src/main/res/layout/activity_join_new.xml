@@ -114,7 +114,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/background_edittext"
         android:padding="10dp"
-        android:text="RoomID"
+        android:hint="RoomID"
         android:textColor="@color/new_general_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

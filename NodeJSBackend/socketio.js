@@ -27,13 +27,6 @@ function init(server) {
     io.on('connection', (socket) => {
         console.log("connection initialized by id: ", socket.id)
 
-        // Send the first item right after the connection is established
-        //For testing purposes
-        // let firstItem = maps[0].items[0];
-        // console.log("first item: ", firstItem);
-        // socket.emit('item', firstItem);
-
-
         socket.on("echoTest", (message, callback) => {
             callback = checkCallback(callback, socket.id, "echoTest")
             console.log("echoTest received:", message)
@@ -272,13 +265,11 @@ function init(server) {
 async function startGame(room) {
 
     room["inGame"] = true
-    //shuffleArray(room["items"])
+    shuffleArray(room["items"])
     let sockets = await io.in(room["roomID"]).fetchSockets()
     setTimeout(
         ()=>{
             sockets.forEach(socket => {
-                //let item = room["items"][room["itemIndex"]]
-                // for testing purposes only send the first item "Musical Instrument"
                 let item = room["items"][room["itemIndex"]]
                 socket.emit("itemGenerated", item)
             })
