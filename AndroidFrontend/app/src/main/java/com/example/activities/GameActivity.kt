@@ -60,6 +60,10 @@ class GameActivity : AppCompatActivity() {
         cameraBtn.setOnClickListener {
             startActivity(intentCamera)
         }
+
+        // check for when the game ends, then start the results activity
+        val intentResults = Intent(this, ResultsActivity::class.java)
+        // startActivity(intentResults)
     }
 
     // adds marker representations of the location given on the GoogleMap object
