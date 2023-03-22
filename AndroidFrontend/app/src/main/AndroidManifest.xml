@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.name">
-
+    xmlns:tools="http://schemas.android.com/tools" package="com.example.objecthunt">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -44,6 +42,10 @@
 
         <activity
             android:name="com.example.activities.CameraActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.activities.ResultsActivity"
             android:exported="false" />
 
         <activity

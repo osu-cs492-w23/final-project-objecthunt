@@ -19,10 +19,6 @@
             android:id="@+id/pvv_main_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
         </androidx.camera.view.PreviewView>
 
     </FrameLayout>
@@ -31,11 +27,8 @@
         android:id="@+id/btn_main_picture_taking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/background_general_button"
-        app:backgroundTint="@null"
+        android:layout_marginBottom="25dp"
         android:text="Take a Picture"
-        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -44,31 +37,22 @@
         android:id="@+id/tv_img_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
         android:text="@string/label"
-        android:background="@drawable/background_general_game_message"
-        android:paddingLeft="18dp"
-        android:paddingRight="18dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:layout_marginBottom="35dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_main_picture_taking" />
 
     <TextView
         android:id="@+id/tv_prediction_accuracy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:background="@drawable/background_general_game_message"
-        android:paddingLeft="18dp"
-        android:paddingRight="18dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:textColor="@color/white"
-        android:textSize="22sp"
+        android:text="@string/prediction"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         app:layout_constraintLeft_toRightOf="@id/tv_img_label"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -84,5 +68,42 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_img_label" />
+
+    <TextView
+        android:id="@+id/user_score_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="You: 0/5"
+        android:textColor="@color/primary_text"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/current_object_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Current Object: ___"
+        android:textColor="@color/primary_text"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_score_tv" />
+
+    <TextView
+        android:id="@+id/opponent_score_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Opponent: 0/5"
+        android:textColor="@color/primary_text"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

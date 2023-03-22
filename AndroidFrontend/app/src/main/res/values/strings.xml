@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoogleLensTest</string>
+    <string name="app_name">ObjectHunt</string>
     <string name="label">Start scanning to see results</string>
     <string name="prediction" />
 </resources>

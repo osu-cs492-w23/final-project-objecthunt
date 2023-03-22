@@ -6,9 +6,9 @@
         </shape>
     </item>
     <item>
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <stroke
-                android:width="100dp"
+                android:width="200dp"
                 android:color="@color/new_general_background" />
             <solid android:color="@android:color/transparent" />
             <size
