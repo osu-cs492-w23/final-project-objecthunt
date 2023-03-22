@@ -1,5 +1,7 @@
 package com.example.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -58,4 +60,26 @@ class ResultsActivity : AppCompatActivity() {
             startActivity(intentMainMenu)
         }
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Go back to the title")
+        builder.setMessage("Do you want to go back to the title?")
+
+        builder.setPositiveButton("Yes", actionListenerYes)
+        builder.setNegativeButton("No", actionListenerNo)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    var actionListenerYes =
+        DialogInterface.OnClickListener { dialog, which ->
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+    var actionListenerNo =
+        DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        }
 }
