@@ -3,6 +3,7 @@
 A real-time multiplayer game where players race to find and photograph objects in specific locations. Built with Android, Node.js, and Google's ML technologies.
 
 [Gameplay Demo](https://web.engr.oregonstate.edu/~hessro/teaching/hof/cs492#w23)
+
 ![Camera UI](https://web.engr.oregonstate.edu/~hessro/static/media/objectHunt.3031aa87c6ef9eba0d8d.jpg)
 ---
 
